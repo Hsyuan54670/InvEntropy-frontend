@@ -1,8 +1,7 @@
 <script lang="tsx" setup>
 import { ElButton } from 'element-plus';
 import { ref, computed } from 'vue'
-import ProjectsView from './ProjectsView.vue';
-import { time } from 'echarts';
+
 
 const searchForm = ref({
     projectName: '',

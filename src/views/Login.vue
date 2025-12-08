@@ -34,10 +34,9 @@ const submitForm = async () => {
         }
         
         const result = await loginApi(loginData)
-        if (result.code == 1) {
+        if (result.code == 200) {
             ElMessage.success('登录成功！')
             localStorage.setItem('loginUser', JSON.stringify(result.data))
-            localStorage.setItem('userType', user.value.userType) // 存储用户类型
             if(user.value.userType === 'admin'){
                 router.push('/admin')
             }else{
@@ -45,7 +44,7 @@ const submitForm = async () => {
             }
             clear()
         } else {
-            ElMessage.error('请输入正确的用户名或密码')
+            ElMessage.error('请输入正确的用户名或密码以及正确的用户类型')
         }
     } catch (error) {
         ElMessage.error('登录失败，请稍后重试')

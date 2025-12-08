@@ -1,7 +1,7 @@
 <script setup>
 import * as echarts from 'echarts';
 import { onMounted, ref , onBeforeUnmount } from 'vue'
-
+import { getUserInfoApi } from '@/api/home'
 const user = ref({
     name: '',
     age: 0,
@@ -12,6 +12,13 @@ const user = ref({
     phone: '',
     finishedProjects: 0,
 })
+const loginUser = JSON.parse(localStorage.getItem('loginUser'))
+const initUserInfo =async() => {
+    const res = await getUserInfoApi(loginUser.id)
+    if(res.code === 200) {
+        user.value = res.data
+    }
+}
 const ingProjectsList = ref([
     {
         funds: 40,
@@ -34,8 +41,9 @@ const ingProjectsList = ref([
     }
 ])
 const timeList = ref([])
-
 const myChart =ref()
+
+
 const initChart = () =>{
     const chartDom = document.getElementById('myChart');
     if(!chartDom) return
@@ -110,10 +118,15 @@ const handleResize = () => {
     myChart.value.resize();
   }
 };
+
+
 onMounted(() => {
     QueryTimeList()
     // 监听窗口大小变化，使图表自适应
     window.addEventListener('resize', handleResize);
+    // 获取用户信息
+    initUserInfo()
+
 })
 onBeforeUnmount(() => {
   if (myChart.value) {
