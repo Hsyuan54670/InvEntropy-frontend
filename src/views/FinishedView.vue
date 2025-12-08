@@ -1,12 +1,42 @@
 <script lang="tsx" setup>
 import { ElButton } from 'element-plus';
 import { ref, computed } from 'vue'
+import ProjectsView from './ProjectsView.vue';
+import { time } from 'echarts';
 
 const searchForm = ref({
     projectName: '',
     projectType: ''
 })
-
+const statusMap = {
+    0: '待审核',
+    1: '已驳回',
+    2: '已通过',
+    3: '进行中',
+    4: '已结项',
+    5: '已废弃'
+}
+const timelines=ref([
+    {status : 0, time : '2024-05-01 12:00:00'},
+    {status : 1, time : '2024-05-02 12:00:00'},
+    {status : 2, time : '2024-05-03 12:00:00'},
+    {status : 3, time : '2024-05-04 12:00:00'},
+    {status : 4, time : '2024-05-04 12:00:00'},
+    {status : 5, time : '2024-05-04 12:00:00'},   
+])
+const drawer = ref(false)
+const handleSearch = () => {
+    console.log(searchForm.value)
+}
+const currentId = ref()
+const currentProject = computed(() => {
+    return playTable.value.find(item => item.id === currentId.value)
+})
+const ProjectView = (id: number) => {
+    drawer.value = true
+    currentId.value = id
+    console.log(currentId.value)
+}
 const playTable = ref([
     {
         id: 0,
@@ -32,10 +62,10 @@ const columnsTable = [
     { key: 'type', dataKey: 'projectType', title: '项目类型', width: 200 ,align:'center' },
     { key: 'content', dataKey: 'content', title: '项目内容', width: 300 ,align:'center' },
     { key: 'finishTime', dataKey: 'finishTime', title: '结项时间', width: 270,align:'center' },
-    { key: 'action', title: '操作', 
-        cellRenderer: () =>(
+    { key: 'action',title: '操作', 
+        cellRenderer: ({rowData}) =>(
             <>
-            <ElButton type="success" size="small" round plain>查看详情</ElButton>
+            <ElButton type="success" size="small" onClick={() => ProjectView(rowData.id)} round plain>查看详情</ElButton>
             </>
         ),
         width: 300 ,
@@ -93,6 +123,36 @@ const playTableData = computed(() => {
             </el-auto-resizer>
         </el-card>
     </div>
+
+    <el-drawer v-model="drawer" title="项目详情" :with-header="true">
+        <template #default>
+            <div v-if="currentProject">
+                <p>项目名称：{{ currentProject.projectName }}</p>
+                <p>项目类型：{{ currentProject.projectType }}</p>
+                <p>项目内容：{{ currentProject.content }}</p>
+                <p>结项时间：{{ currentProject.finishTime }}</p>
+            </div>
+            <div class="timeline">
+                <p>项目状态变更时间线：</p>
+                <el-timeline style="max-width: 600px">
+                  <el-timeline-item
+                    v-for="(activity, index) in timelines"
+                    :key="index"
+                    :timestamp="activity.time"
+                    :type="activity.status === 0 ? 'default' : 
+                           activity.status === 1 ? 'warning' :
+                           activity.status === 2 ? 'info' :
+                           activity.status === 3 ? 'primary' :
+                           activity.status === 4 ? 'success' :
+                           'danger'"
+                    :size="activity.status === 1 ? 'large' : 'large'"
+                  >
+                    {{ statusMap[activity.status] }}
+                  </el-timeline-item>
+                </el-timeline>
+            </div>
+        </template>
+    </el-drawer>
 </template>
 
 <style scoped>

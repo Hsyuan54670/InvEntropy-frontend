@@ -6,7 +6,20 @@ const searchForm = ref({
     projectName: '',
     projectType: ''
 })
-
+const payForm = ref({
+    funds: 0
+})
+const handleSearch = () => {
+    console.log(searchForm.value)
+}
+const dialogVisible = ref(false)
+const payFunds = (id: number) => {
+    dialogVisible.value = true
+    console.log(id)
+}
+const submitPayFunds = async () => {
+    console.log(payForm.value)
+}
 const playTable = ref([
     {
         id: 0,
@@ -35,11 +48,9 @@ const columnsTable = [
     { key: 'content', dataKey: 'content', title: '项目内容', width: 270 },
     { key: 'deadline', dataKey: 'deadline', title: '截止时间', width: 200 },
     { key: 'action', title: '操作', 
-        cellRenderer: () =>(
+        cellRenderer: ({rowData}) =>(
             <>
-            <ElButton type="success" size="small" round plain>申请延期</ElButton>
-            <ElButton type="warning" size="small" round plain>申报经费</ElButton>
-            <ElButton type="primary" size="small" round plain>申请结项</ElButton>
+            <ElButton type="warning" size="small" onClick={() => payFunds(rowData.id)} round plain>申报经费</ElButton>
             </>
         ),
         width: 240 ,
@@ -60,7 +71,12 @@ const playTableData = computed(() => {
     }))
 });
 
-
+const rules = ref({
+    funds: [
+        { required: true, message: '请输入申报经费', trigger: 'blur' },
+        { min: 0, message: '申报经费不能小于0', trigger: 'blur' }
+    ]
+})
 </script>
 
 <template>
@@ -97,6 +113,24 @@ const playTableData = computed(() => {
             </el-auto-resizer>
         </el-card>
     </div>
+
+    <div class="change-password-dialog">
+    <el-dialog title="申报经费" 
+     v-model="dialogVisible" 
+      width="400px"
+    >
+      <el-form :model="payForm" ref="cpFormRef" :rules="rules" label-width="120px">
+        <el-form-item label="申报经费" prop="funds">
+          <el-input v-model="payForm.funds" placeholder="请输入申报经费" clearable style="width: 220px;" type="number" />
+        </el-form-item>
+      </el-form>
+
+      <template #footer>
+        <el-button type="primary" @click="submitPayFunds">确定</el-button>
+        <el-button @click="dialogVisible = false">取消</el-button>
+      </template>
+    </el-dialog>
+  </div>
 </template>
 
 <style scoped>

@@ -1,11 +1,24 @@
 <script lang="tsx" setup>
 import { ElButton } from 'element-plus';
+import { te } from 'element-plus/es/locale';
 import { ref, computed } from 'vue'
 
 const searchForm = ref({
     projectName: '',
     status: null
 })
+const handleSearch = () => {
+    console.log(searchForm.value)
+}
+
+const dialogVisible = ref(false)
+const currentReason = ref('')
+const handleClick = (reason: string) => {
+    currentReason.value = reason
+    dialogVisible.value = true
+    console.log(currentReason.value)
+}
+
 
 const playTable = ref([
     {
@@ -25,19 +38,19 @@ const playTable = ref([
         createTime: '2023-08-15T12:00:00'
     },
 ])
+
 const columnsTable = [
+    { key: 'id', dataKey: 'id', title: '项目ID',  align: 'center', hidden: true },
     { key: 'name', dataKey: 'projectName', title: '项目名称', width: 200 },
     { key: 'status', dataKey: 'status', title: '项目状态', width: 200, align: 'center',
         cellRenderer: ({ cellData: name }) => {
             return name === '未通过' ? <ElTag type="danger">{name}</ElTag> : <ElTag type="info">{name}</ElTag>
         },
     },
-    { key: 'reason', title: '意见',
-        cellRenderer: () =>(
-            <>
-                <ElButton type="primary" size="small" round plain>查看详情</ElButton>
-            </>
-        ),
+    { key: 'reason', dataKey: 'reason', title: '意见',
+        cellRenderer: ({ cellData: reason }) =>(
+                <ElButton type="primary" size="small" onClick={()=>handleClick(reason)} round plain>查看详情</ElButton>
+        ),  
         width: 400 ,
         align: 'center'
         },
@@ -51,7 +64,7 @@ const columnsTable = [
     //     align: 'center'
     // }
     { key: 'approver', dataKey: 'approver', title: '审批人', width: 200, align: 'center' },
-    { key: 'createTime', dataKey: 'createTime', title: '申报时间', width: 200, align: 'center',
+    { key: 'createTime', dataKey: 'createTime', title: '审批时间', width: 200, align: 'center',
         cellRenderer: ({ cellData: name }) => {
             return name ? name.split('T')[0]+' '+name.split('T')[1].split('.')[0] : '无'
         },
@@ -65,7 +78,8 @@ const playTableData = computed(() => {
         projectName: item.projectName,
         status: item.status === 1 ? '未通过' : '未审批',
         approver: item.approver,
-        createTime: item.createTime
+        createTime: item.createTime,
+        reason: item.reason
     }))
 });
 
@@ -106,6 +120,19 @@ const playTableData = computed(() => {
             </el-auto-resizer>
         </el-card>
     </div>
+
+    <div class="dialog-container">
+        <el-dialog title="审批意见" 
+         v-model="dialogVisible" 
+          width="600px"
+        >
+        {{currentReason}}
+            <template #footer>
+                <el-button type="primary" @click="dialogVisible = false">关闭</el-button>
+            </template>
+        </el-dialog>
+    </div>
+
 </template>
 
 <style scoped>
