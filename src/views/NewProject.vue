@@ -5,20 +5,21 @@ import { UploadFilled } from '@element-plus/icons-vue'
 import { submitProjectApi } from '@/api/project'
 
 const projectTypes = ref([
-    { value: 1 , label: '项目类型1' },
-    { value: 2 , label: '项目类型2' },
-    { value: 3 , label: '项目类型3' },
+    { value: 1 , label: '纵向项目' },
+    { value: 2 , label: '横向项目' },
+    { value: 3 , label: '校内项目' },
 ])
 
 const subForm = ref({
     projectName: '',
     projectType: null,
     applicant: '',
+    applicantId: '',
     funds: '',
     content: '',
     deadline: '',
 })
-
+subForm.value.applicantId = JSON.parse(localStorage.getItem('loginUser')).id
 // 表单验证规则
 const rules = {
     projectName: [
@@ -32,7 +33,7 @@ const rules = {
     ],
     funds: [
         { required: true, message: '项目经费不能为空', trigger: 'blur' },
-        { type: 'number', message: '只能输入正数', trigger: 'blur' },
+        { type: 'number', message: '只能输入正数', trigger: 'change' },
         { min: 0, message: '项目经费不能为负数', trigger: 'blur' },
     ],
     content: [
@@ -66,7 +67,10 @@ const beforeFileUpload = (file) => {
     }
     return true
 }
-
+const afterUpload =(response)=>{
+    subForm.value.content=response.data
+    console.log('上传成功后的响应数据:', response.data)
+}
 
 onMounted(() => {
     console.log('初始 deadline 值:', subForm.value.deadline);
@@ -119,7 +123,7 @@ const clear = () => {
                         v-for="type in projectTypes"
                         :key="type.value"
                         :label="type.label"
-                        :value="type.value"
+                        :value="type.label"
                     />
                 </el-select>
             </el-form-item>
@@ -141,6 +145,7 @@ const clear = () => {
                     action="/api/upload"
                     multiple
                     :before-upload="beforeFileUpload"
+                    :on-success="afterUpload"
                     accept=".doc,.docx,.xls,.xlsx,.pdf"
                 >
                     <el-icon class="el-icon--upload"><upload-filled /></el-icon>

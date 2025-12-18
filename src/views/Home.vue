@@ -12,9 +12,8 @@ const user = ref({
     phone: '',
     finishedProjects: 0,
 })
-const loginUser = JSON.parse(localStorage.getItem('loginUser'))
 const initUserInfo =async() => {
-    const res = await getUserInfoApi(loginUser.id)
+    const res = await getUserInfoApi()
     if(res.code === 200) {
         user.value = res.data
     }
@@ -22,7 +21,7 @@ const initUserInfo =async() => {
 const ingProjectsList = ref([])
 
 const initIngProjectsList = async() => {
-    const res = await getUserIngProjectsApi(loginUser.id)
+    const res = await getUserIngProjectsApi()
     if(res.code === 200) {
         ingProjectsList.value = res.data
         QueryTimeList()
@@ -109,7 +108,6 @@ const handleResize = () => {
 
 
 onMounted(() => {
-    
     // 监听窗口大小变化，使图表自适应
     window.addEventListener('resize', handleResize);
     // 获取用户信息

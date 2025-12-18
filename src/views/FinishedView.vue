@@ -1,6 +1,7 @@
 <script lang="tsx" setup>
 import { ElButton } from 'element-plus';
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { getFinishedProjectsApi } from '@/api/project'
 
 
 const searchForm = ref({
@@ -56,6 +57,12 @@ const playTable = ref([
         content: '关于深度学习算法的优化研究...'
     },
 ])
+const initPlayTable = async () => {
+    const res = await getFinishedProjectsApi()
+    if(res.code === 200) {
+        playTable.value = res.data
+    }
+}
 const columnsTable = [
     { key: 'name', dataKey: 'projectName', title: '项目名称', width: 200 ,align:'center' },
     { key: 'type', dataKey: 'projectType', title: '项目类型', width: 200 ,align:'center' },
@@ -85,7 +92,9 @@ const playTableData = computed(() => {
     }))
 });
 
-
+onMounted(() => {
+    initPlayTable()
+});
 </script>
 
 <template>

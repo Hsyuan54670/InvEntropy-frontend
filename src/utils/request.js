@@ -12,9 +12,6 @@ service.interceptors.response.use(
     response => {
         return response.data
     },
-    error =>{
-        return Promise.reject(error)
-    },
     error => {
         if(error.response.status===401){
             ElMessage.error('登录状态错误，请重新登录')

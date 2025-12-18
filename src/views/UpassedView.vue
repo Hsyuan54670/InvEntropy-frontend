@@ -1,8 +1,8 @@
 <script lang="tsx" setup>
 import { ElButton } from 'element-plus';
 import { te } from 'element-plus/es/locale';
-import { ref, computed } from 'vue'
-
+import { ref, computed, onMounted } from 'vue'
+import { getUnpassedProjectsApi } from '@/api/project'
 const searchForm = ref({
     projectName: '',
     status: null
@@ -38,7 +38,12 @@ const playTable = ref([
         createTime: '2023-08-15T12:00:00'
     },
 ])
-
+const initPlayTable =async() => { 
+    const res = await getUnpassedProjectsApi()
+    if(res.code === 200) {
+        playTable.value = res.data
+    }
+}
 const columnsTable = [
     { key: 'id', dataKey: 'id', title: '项目ID',  align: 'center', hidden: true },
     { key: 'name', dataKey: 'projectName', title: '项目名称', width: 200 },
@@ -83,7 +88,9 @@ const playTableData = computed(() => {
     }))
 });
 
-
+onMounted(() => {
+    initPlayTable()
+})
 </script>
 
 <template>

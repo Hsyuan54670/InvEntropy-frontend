@@ -7,18 +7,12 @@ const router = useRouter()
 const user=ref('')
 const dialogVisible=ref(false)
 const subForm=ref({
-  username:'',
+  id:'',
   password:'',
   confirmPassword:''
 })
+
 onMounted(()=>{
-  const loginUser=JSON.parse(localStorage.getItem('loginUser'))
-  if(loginUser&&loginUser.name){
-    user.value=loginUser.name
-  }
-  if(loginUser&&loginUser.username){
-    subForm.value.username=loginUser.username
-  }
 })
 
 // 退出登录
@@ -61,7 +55,7 @@ const submitChangePassword=async()=>{
       return
     }else{
       const result=await changePasswordApi(subForm.value)
-      if(result.code==1){
+      if(result.code==200){
         ElMessage.success(result.msg)
         dialogVisible.value=false
       }else{

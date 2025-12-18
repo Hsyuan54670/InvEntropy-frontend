@@ -1,9 +1,9 @@
 import request from '@/utils/request'
 
-export const getUserInfoApi = (id) => {
-    return request.get(`/homes/userInfo/${id}`)
+export const getUserInfoApi = () => {
+    return request.get(`/homes/userInfo`)
 }
 
-export const getUserIngProjectsApi = (id) => {
-    return request.get(`/homes/userIngProjects/${id}`)
+export const getUserIngProjectsApi = () => {
+    return request.get(`/homes/userIngProjects`)
 }

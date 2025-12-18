@@ -1,6 +1,8 @@
 <script lang="tsx" setup>
+import axios from 'axios';
 import { ElButton } from 'element-plus';
-import { ref, computed } from 'vue'
+import { ref, computed,onMounted } from 'vue'
+import { getIngProjectsApi } from '@/api/project';
 
 const searchForm = ref({
     projectName: '',
@@ -20,32 +22,83 @@ const payFunds = (id: number) => {
 const submitPayFunds = async () => {
     console.log(payForm.value)
 }
+
 const playTable = ref([
     {
-        id: 0,
-        projectName: 'xx',
-        projectType: 'aa',
-        remainingFunds: 10,
-        funds: 20,
-        deadline:'2024-05-01T12:00:00',
-        content: '23'
-    },
-    {
-        id: 1,
-        projectName: '机器学习研究',
-        projectType: '基础研究',
-        remainingFunds: 45000,
-        funds: 50000,
-        deadline:'2024-05-15T12:00:00',
-        content: '关于深度学习算法的优化研究...'
+    id: '',
+    projectName: '',
+    projectType: '',
+    remainingFunds: 0,
+    funds: 0,
+    content: '',
+    deadline: ''
     },
 ])
+const getPlayTable = async () => {
+    const result = await getIngProjectsApi()
+    console.log(result)
+    playTable.value = result.data
+}
+
 const columnsTable = [
     { key: 'name', dataKey: 'projectName', title: '项目名称', width: 200 },
     { key: 'type', dataKey: 'projectType', title: '项目类型', width: 150 },
     { key: 'remainingFunds', dataKey: 'remainingFunds', title: '剩余资金', width: 100 },
     { key: 'funds', dataKey: 'funds', title: '总资金', width: 100 },
-    { key: 'content', dataKey: 'content', title: '项目内容', width: 270 },
+    { 
+        key: 'content', 
+        dataKey: 'content', 
+        title: '项目内容', 
+        width: 270,
+        cellRenderer: ({ cellData, rowData }) => {
+            // 假设 content 字段是文件路径或URL
+            if (!cellData) return '-';
+            
+            // 如果是字符串，直接显示为链接
+            if (typeof cellData === 'string') {
+                return (
+                    <a 
+                        href={cellData} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        style={{ 
+                            color: '#409eff', 
+                            textDecoration: 'none',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        {getFileName(cellData)} {/* 提取文件名 */}
+                    </a>
+                );
+            }
+            
+            // 如果是数组（多个文件）
+            if (Array.isArray(cellData)) {
+                return (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        {cellData.map((file, index) => (
+                            <a 
+                                key={index}
+                                href={file.url || file.path}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{ 
+                                    color: '#409eff', 
+                                    textDecoration: 'none',
+                                    cursor: 'pointer',
+                                    fontSize: '12px'
+                                }}
+                            >
+                                {file.name || getFileName(file.url || file.path)}
+                            </a>
+                        ))}
+                    </div>
+                );
+            }
+            
+            return cellData;
+        }
+    },
     { key: 'deadline', dataKey: 'deadline', title: '截止时间', width: 200 },
     { key: 'action', title: '操作', 
         cellRenderer: ({rowData}) =>(
@@ -57,6 +110,15 @@ const columnsTable = [
         align: 'center'
     }
 ]
+// 从URL中提取文件名
+const getFileName = (url) => {
+    if (!url) return '文件';
+    const parts = url.split('/');
+    return decodeURIComponent(parts[parts.length - 1]);
+};
+
+
+
 
 const playTableData = computed(() => {
     return playTable.value.map(item => ({
@@ -76,6 +138,9 @@ const rules = ref({
         { required: true, message: '请输入申报经费', trigger: 'blur' },
         { min: 0, message: '申报经费不能小于0', trigger: 'blur' }
     ]
+})
+onMounted(() => { 
+    getPlayTable()
 })
 </script>
 
