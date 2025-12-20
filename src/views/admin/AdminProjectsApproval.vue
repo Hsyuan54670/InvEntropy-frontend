@@ -59,7 +59,7 @@ onMounted
 </script>
 
 <template>
-<h1>待审批项目</h1>{{reason}}
+<h1>待审批项目</h1>
     <div>
         <el-table :data="tableData" border style="width: 100%">
             <el-table-column prop="projectName" label="项目名称" width="180" align="center"/>
@@ -68,7 +68,7 @@ onMounted
             <el-table-column prop="content" label="项目内容" width="180" align="center"/>
             <el-table-column prop="applicant" label="项目负责人" width="180" align="center"/>
             <el-table-column prop="funds" label="项目经费" width="180" align="center"/>
-            <el-table-column prop="address" label="操作"  align="center">
+            <el-table-column prop="op" label="操作"  align="center">
                 <template #default="scope">
                     <el-button type="success" @click="handleApproval(scope.row.id)">通过</el-button>
                     <el-button type="danger" @click="notApproval(scope.row.id)">拒绝</el-button>

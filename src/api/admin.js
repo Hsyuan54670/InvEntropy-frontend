@@ -9,3 +9,7 @@ export const approvalProjectApi=(id)=>{
 export const NotApprovalProjectApi=(id,reason)=>{
     return request.put(`/admin/notApprovalProject/${id}?reason=${encodeURIComponent(reason)}`)
 }
+
+export const getFundsApprovalApi=() => {
+    return request.get(`/admin/fundsApprovalList`)
+}

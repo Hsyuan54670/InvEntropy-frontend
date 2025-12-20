@@ -1,28 +1,37 @@
 <script lang="tsx" setup>
-import axios from 'axios';
 import { ElButton } from 'element-plus';
 import { ref, computed,onMounted } from 'vue'
 import { getIngProjectsApi } from '@/api/project';
-
+import { commitPayFundsApi } from '@/api/teacher';
 const searchForm = ref({
     projectName: '',
     projectType: ''
 })
 const payForm = ref({
-    funds: 0
+    projectId: 0,
+    applicant: '', 
+    reason: '',
+    appliedFunds: 0,
+    remainingFunds: 0, 
+    applicantId: 0 
 })
+
 const handleSearch = () => {
     console.log(searchForm.value)
 }
 const dialogVisible = ref(false)
 const payFunds = (id: number) => {
     dialogVisible.value = true
-    console.log(id)
+    payForm.value.projectId = id
 }
 const submitPayFunds = async () => {
-    console.log(payForm.value)
+    const res= await commitPayFundsApi(payForm.value);
+    if(res.code==200){
+        dialogVisible.value = false
+        getPlayTable()
+    }
 }
-
+9
 const playTable = ref([
     {
     id: '',
@@ -135,8 +144,12 @@ const playTableData = computed(() => {
 
 const rules = ref({
     funds: [
-        { required: true, message: '请输入申报经费', trigger: 'blur' },
+        { required: true, message: '请输入申报经费', trigger: 'change' },
         { min: 0, message: '申报经费不能小于0', trigger: 'blur' }
+    ]
+    ,
+    reason: [
+        { required: true, message: '请输入申请理由', trigger: 'blur' }
     ]
 })
 onMounted(() => { 
@@ -186,7 +199,10 @@ onMounted(() => {
     >
       <el-form :model="payForm" ref="cpFormRef" :rules="rules" label-width="120px">
         <el-form-item label="申报经费" prop="funds">
-          <el-input v-model="payForm.funds" placeholder="请输入申报经费" clearable style="width: 220px;" type="number" />
+          <el-input v-model="payForm.appliedFunds" placeholder="请输入申报经费" clearable style="width: 220px;" type="number" />
+        </el-form-item>
+        <el-form-item label="申报理由" prop="reason">
+            <el-input v-model="payForm.reason" placeholder="请输入申报理由" clearable style="width: 220px;" type="text" />
         </el-form-item>
       </el-form>
 
