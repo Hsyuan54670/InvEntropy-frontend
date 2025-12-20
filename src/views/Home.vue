@@ -24,6 +24,7 @@ const initIngProjectsList = async() => {
     const res = await getUserIngProjectsApi()
     if(res.code === 200) {
         ingProjectsList.value = res.data
+        ingProjectsList.value.forEach(project => {project.deadline = project.deadline.replace('T',' ')})
         QueryTimeList()
     }
 }
@@ -184,7 +185,7 @@ onBeforeUnmount(() => {
 
         <el-col :span="14">
             <div class="report-projects">
-                <el-card style="height: 800px;">
+                <el-card style="height: 835px;">
                     <div class="card-content">
                         <div id="myChart" style="height: 700px;"></div>
                     </div>

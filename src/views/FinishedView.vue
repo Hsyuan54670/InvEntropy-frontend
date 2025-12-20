@@ -2,6 +2,7 @@
 import { ElButton } from 'element-plus';
 import { ref, computed, onMounted } from 'vue'
 import { getFinishedProjectsApi } from '@/api/project'
+import { pl } from 'element-plus/es/locale';
 
 
 const searchForm = ref({
@@ -37,37 +38,19 @@ const ProjectView = (id: number) => {
     currentId.value = id
     console.log(currentId.value)
 }
-const playTable = ref([
-    {
-        id: 0,
-        projectName: 'xx',
-        projectType: 'aa',
-        remainingFunds: 10,
-        funds: 20,
-        finishTime:'2024-05-01T12:00:00',
-        content: '23'
-    },
-    {
-        id: 1,
-        projectName: '机器学习研究',
-        projectType: '基础研究',
-        remainingFunds: 45000,
-        funds: 50000,
-        finishTime:'2024-05-15T12:00:00',
-        content: '关于深度学习算法的优化研究...'
-    },
-])
+const playTable = ref([])
 const initPlayTable = async () => {
     const res = await getFinishedProjectsApi()
     if(res.code === 200) {
         playTable.value = res.data
+        playTable.value.forEach(item=> {item.updateTime=item.updateTime.replace('T',' ')})
     }
 }
 const columnsTable = [
     { key: 'name', dataKey: 'projectName', title: '项目名称', width: 200 ,align:'center' },
     { key: 'type', dataKey: 'projectType', title: '项目类型', width: 200 ,align:'center' },
     { key: 'content', dataKey: 'content', title: '项目内容', width: 300 ,align:'center' },
-    { key: 'finishTime', dataKey: 'finishTime', title: '结项时间', width: 270,align:'center' },
+    { key: 'updateTime', dataKey: 'updateTime', title: '结项时间', width: 270,align:'center' },
     { key: 'action',title: '操作', 
         cellRenderer: ({rowData}) =>(
             <>
@@ -88,7 +71,7 @@ const playTableData = computed(() => {
         remainingFunds: `¥${item.remainingFunds.toLocaleString()}`,
         funds: `¥${item.funds.toLocaleString()}`,
         content: item.content,
-        finishTime: item.finishTime
+        updateTime: item.updateTime
     }))
 });
 
@@ -138,7 +121,7 @@ onMounted(() => {
                 <p>项目名称：{{ currentProject.projectName }}</p>
                 <p>项目类型：{{ currentProject.projectType }}</p>
                 <p>项目内容：{{ currentProject.content }}</p>
-                <p>结项时间：{{ currentProject.finishTime }}</p>
+                <p>结项时间：{{ currentProject.updateTime }}</p>
             </div>
             <div class="timeline">
                 <p>项目状态变更时间线：</p>

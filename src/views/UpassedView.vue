@@ -20,24 +20,7 @@ const handleClick = (reason: string) => {
 }
 
 
-const playTable = ref([
-    {
-        id: 0,
-        projectName: 'xx',
-        status:0,
-        approver: '无',
-        reason: '项目经费不足',
-        createTime: null
-    },
-    {
-        id: 1,
-        projectName: '机器学习研究',
-        status:1,
-        approver: '李四',
-        reason: '理由不充分',
-        createTime: '2023-08-15T12:00:00'
-    },
-])
+const playTable = ref([])
 const initPlayTable =async() => { 
     const res = await getUnpassedProjectsApi()
     if(res.code === 200) {

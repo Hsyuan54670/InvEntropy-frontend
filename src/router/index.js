@@ -10,7 +10,11 @@ import FinishedProjects from '@/views/FinishedView.vue'
 
 import AdminLayout from '@/views/admin/AdminLayout.vue'
 import AdminHome from '@/views/admin/AdminHome.vue'
-
+import AdminProjectsApproval from '@/views/admin/AdminProjectsApproval.vue'
+import AdminFundsApproval from '@/views/admin/AdminFundsApproval.vue'
+import AdminManageProjects from '@/views/admin/AdminProjectsView.vue'
+import AdminFundsLogs from '@/views/admin/AdminFundsLog.vue'
+import AdminProjectsLogs from '@/views/admin/AdminProjectsLog.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -43,6 +47,11 @@ const router = createRouter({
         redirect:"/adminHome",
         children:[
             {path:'/adminHome',name:'AdminHome',component:AdminHome},
+            {path:'/projectsApproval', name:'ProjectsApproval', component:AdminProjectsApproval},
+            {path:'/fundsApproval', name:'FundsApproval', component:AdminFundsApproval},
+            {path:'/manageProjects', name:'ManageProjects', component:AdminManageProjects},
+            {path:'/fundsLogs', name:'FundsLogs', component:AdminFundsLogs},
+            {path:'/projectsLogs', name:'ProjectsLogs', component:AdminProjectsLogs}
         ]
     },
   ],

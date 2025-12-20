@@ -36,8 +36,8 @@ const playTable = ref([
 ])
 const getPlayTable = async () => {
     const result = await getIngProjectsApi()
-    console.log(result)
     playTable.value = result.data
+    playTable.value.forEach(item => {item.deadline=item.deadline.replace('T',' ')})
 }
 
 const columnsTable = [
