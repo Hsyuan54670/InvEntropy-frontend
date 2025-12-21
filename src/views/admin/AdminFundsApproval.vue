@@ -4,15 +4,24 @@ import { ElMessageBox,ElMessage } from 'element-plus'
 import { getFundsApprovalApi } from '@/api/admin'
 import { approvalFundsApi,NotApprovalFundsApi } from '@/api/admin'
 const tableData = ref([])
+const currentPage = ref(1)
+const pageSize = ref(5)
+const total = ref(0)
+
 const initPlayTable = async () => { 
-    const res = await getFundsApprovalApi()
+    const res = await getFundsApprovalApi({
+        page: currentPage.value,
+        size: pageSize.value
+    })
     if(res.code === 200) {
-        tableData.value = res.data
+        tableData.value = res.data.records
+        total.value = res.data.total
         tableData.value.forEach(item=>{
             item.appliedTime=item.appliedTime.replace('T',' ')
         })
     }
 }
+
 const comment=ref('')
 const ApprovalFunds=async(row)=>{
     ElMessageBox.prompt('通过理由', '', {
@@ -68,6 +77,18 @@ const notApprovalFunds=async(id)=>{
         }
     }).catch(() => {})
 }
+
+const handlePageChange = (page) => {
+  currentPage.value = page
+  initPlayTable()
+}
+
+const handleSizeChange = (size) => {
+  pageSize.value = size
+  currentPage.value = 1
+  initPlayTable()
+}
+
 onMounted(()=>{
     initPlayTable()
 })
@@ -91,10 +112,21 @@ onMounted(()=>{
                 </template>
             </el-table-column>
         </el-table>
+        
+        <el-pagination
+          v-model:current-page="currentPage"
+          v-model:page-size="pageSize"
+          :page-sizes="[5, 10, 20, 50]"
+          :total="total"
+          layout="total, sizes, prev, pager, next, jumper"
+          @size-change="handleSizeChange"
+          @current-change="handlePageChange"
+          style="margin-top: 20px; justify-content: center;"
+        />
     </div>
 </template>
 
 <style scoped>
 
 
-</style> 
+</style>

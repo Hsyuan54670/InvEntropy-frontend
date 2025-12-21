@@ -6,5 +6,5 @@ export const changePasswordApi = (data) => {
 
 export const commitPayFundsApi = (data) => {
     console.log(data)
-    return request.put('/admin/fundsApprovalList',data)
+    return request.put('/user/commitPayFunds',data)
 }

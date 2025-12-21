@@ -40,7 +40,7 @@ const submitForm = async () => {
             if(user.value.userType === 'admin'){
                 router.push('/admin')
             }else{
-                router.push('/')
+                router.push('/layout')
             }
             clear()
         } else {

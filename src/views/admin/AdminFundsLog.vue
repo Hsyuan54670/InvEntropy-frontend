@@ -3,16 +3,35 @@ import {ref,onMounted} from 'vue'
 import { getFundsLogApi } from '@/api/admin'
 
 const tableData = ref([])
+const currentPage = ref(1)
+const pageSize = ref(5)
+const total = ref(0)
 
 const initTableData = async() =>{ 
-    const res = await getFundsLogApi()
+    const res = await getFundsLogApi({
+        page: currentPage.value,
+        size: pageSize.value
+    })
     if(res.code === 200){
-        tableData.value = res.data
+        tableData.value = res.data.records
+        total.value = res.data.total
         tableData.value.forEach(element => {
             element.updateTime = element.updateTime.replace('T',' ')
         });
     }
 }
+
+const handlePageChange = (page) => {
+  currentPage.value = page
+  initTableData()
+}
+
+const handleSizeChange = (size) => {
+  pageSize.value = size
+  currentPage.value = 1
+  initTableData()
+}
+
 onMounted(()=>{
     initTableData()
 })
@@ -35,7 +54,17 @@ onMounted(()=>{
         <el-table-column prop="approverId" label="操作人ID" align="center" ></el-table-column>
         <el-table-column prop="updateTime" label="操作时间" align="center" ></el-table-column>
         </el-table>
-
+        
+        <el-pagination
+          v-model:current-page="currentPage"
+          v-model:page-size="pageSize"
+          :page-sizes="[5, 10, 20, 50]"
+          :total="total"
+          layout="total, sizes, prev, pager, next, jumper"
+          @size-change="handleSizeChange"
+          @current-change="handlePageChange"
+          style="margin-top: 20px; justify-content: center;"
+        />
 
     </div>
 
@@ -44,4 +73,4 @@ onMounted(()=>{
 <style scoped>
 
 
-</style> 
+</style>

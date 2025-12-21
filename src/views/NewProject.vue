@@ -19,7 +19,6 @@ const subForm = ref({
     content: '',
     deadline: '',
 })
-subForm.value.applicantId = JSON.parse(localStorage.getItem('loginUser')).id
 // 表单验证规则
 const rules = {
     projectName: [

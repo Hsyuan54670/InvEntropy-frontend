@@ -1,17 +1,22 @@
 import request from '@/utils/request'
-export const getProjectsApprovalApi=() => {
-    return request.get(`/admin/projectsApprovalList`)
-}
-export const approvalProjectApi=(id)=>{
-    return request.put(`/admin/approvalProject/${id}`)
+export const getProjectsApprovalApi=(params) => {
+    return request.get(`/admin/projectsApprovalList`, { params })
 }
 
-export const NotApprovalProjectApi=(id,reason)=>{
-    return request.put(`/admin/notApprovalProject/${id}?reason=${encodeURIComponent(reason)}`)
+export const getFundsApprovalApi=(params) => {
+    return request.get(`/admin/fundsApprovalList`, { params })
 }
 
-export const getFundsApprovalApi=() => {
-    return request.get(`/admin/fundsApprovalList`)
+export const getAllProjectsApi=(params) => {
+    return request.get(`/admin/projectsList`, { params })
+}
+
+export const getProjectsLogApi=(params) => {
+    return request.get(`/admin/projectsLogList`, { params })
+}
+
+export const getFundsLogApi=(params) => {
+    return request.get(`/admin/fundsLogList`, { params })
 }
 
 export const approvalFundsApi=(appliedFunds, id, comment)=>{
@@ -26,17 +31,19 @@ export const approvalFundsApi=(appliedFunds, id, comment)=>{
 }
 
 export const NotApprovalFundsApi=(id,comment)=>{
-    return request.put(`/admin/notApprovalFunds/${id}?comment=${encodeURIComponent(comment)}`)
+    return request.put(`/admin/notApprovalFunds/${id}`, {
+        comment: comment
+    }, {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
 }
 
-export const getProjectsLogApi=()=>{
-    return request.get(`/admin/projectsLogList`)
+export const approvalProjectApi=(id)=>{
+    return request.put(`/admin/approvalProject/${id}`)
 }
 
-export const getFundsLogApi=()=>{
-    return request.get(`/admin/fundsLogList`)
-}
-
-export const getAllProjectsApi=()=>{
-    return request.get(`/admin/projectsList`)
+export const NotApprovalProjectApi=(id,reason)=>{
+    return request.put(`/admin/notApprovalProject/${id}?reason=${encodeURIComponent(reason)}`)
 }

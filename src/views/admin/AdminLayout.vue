@@ -2,15 +2,8 @@
 import { ref,onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import {ElMessageBox,ElMessage} from 'element-plus'
-import { changePasswordApi } from '@/api/teacher'
 const router = useRouter()
 const user=ref('')
-const dialogVisible=ref(false)
-const subForm=ref({
-  id:'',
-  password:'',
-  confirmPassword:''
-})
 
 onMounted(()=>{
 })
