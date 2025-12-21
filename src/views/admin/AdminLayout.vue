@@ -55,7 +55,7 @@ const logout=()=>{
         <el-aside width="300px" class="aside">
           <el-menu router="true">
 
-          <el-menu-item index="0">
+          <el-menu-item index="/AdminHome">
             <template #title>
               <el-icon><HomeFilled /></el-icon>概览
             </template>
