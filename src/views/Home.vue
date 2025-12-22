@@ -2,6 +2,7 @@
 import * as echarts from 'echarts';
 import { onMounted, ref , onBeforeUnmount } from 'vue'
 import { getUserInfoApi,getUserIngProjectsApi } from '@/api/home'
+import { watch, nextTick } from 'vue'
 const user = ref({
     name: '',
     age: 0,
@@ -30,6 +31,19 @@ const initIngProjectsList = async() => {
 }
 const timeList = ref([])
 const myChart =ref()
+// 监听 timeList 变化
+watch(() => timeList.value.length, (newLength) => {
+    if (newLength > 0) {
+        // 确保 DOM 已经更新
+        nextTick(() => {
+            if (!myChart.value) {
+                initChart()
+            } else {
+                uploadChart()
+            }
+        })
+    }
+}, { immediate: true })
 
 
 const initChart = () =>{
@@ -187,7 +201,10 @@ onBeforeUnmount(() => {
             <div class="report-projects">
                 <el-card style="height: 835px;">
                     <div class="card-content">
-                        <div id="myChart" style="height: 700px;"></div>
+                        <div id="myChart" style="height: 700px;" v-if="timeList.length>0"></div>
+                        <div v-else>
+                            <el-empty description="暂无进行中的项目" />
+                        </div>
                     </div>
                 </el-card>
             </div>

@@ -38,7 +38,7 @@ const logout=()=>{
         <span class="title">XX大学项目管理系统</span>
         <span class="right-tools">
           <a href="javascript:void(0)" @click="logout">
-            <el-icon><SwitchButton /></el-icon>退出登录
+            <el-icon><SwitchButton /></el-icon>管理员退出
           </a>
         </span>
       </el-header>
@@ -68,6 +68,7 @@ const logout=()=>{
                 <el-menu-item index="/manageProjects"><el-icon><Checked /></el-icon>查看所有项目</el-menu-item>
                 <el-menu-item index="/fundsLogs"><el-icon><TrendCharts /></el-icon>资金流水记录</el-menu-item>
                 <el-menu-item index="/projectsLogs"><el-icon><Management /></el-icon>项目管理记录</el-menu-item>
+                <el-menu-item index="/account"><el-icon><Management /></el-icon>账号管理</el-menu-item>
           </el-sub-menu>
 
         </el-menu>
@@ -92,28 +93,38 @@ const logout=()=>{
   display: flex;
   justify-content: space-between; 
   align-items: center;
-  background: linear-gradient(to right, #5baef6, #a4e1f8);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  padding: 0 30px;
+  position: relative;
 }
 .title {
-  font-size: 40px;
-  font-weight: bold;
+  font-size: 24px;
+  font-weight: 600;
   color: white;
-  font-family: '楷体';
+  font-family: 'Microsoft YaHei', sans-serif;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 .right-tools {
   display: flex;
   align-items: center;
-  font-size: 20px;
-  font-family: '楷体';
+  font-size: 14px;
+  font-family: 'Microsoft YaHei', sans-serif;
 }
 .right-tools a{
   display: inline-flex;
-  gap:3px;
-  color: white;
+  align-items: center;
+  gap: 5px;
+  color: rgba(255, 255, 255, 0.9);
   text-decoration: none;
+  padding: 8px 15px;
+  border-radius: 20px;
+  transition: all 0.3s ease;
 }
 .right-tools a:hover {
-  color: #f0f0f0; 
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
 }
 .second-container .aside {
   border-right: 2px solid #e0e0e0;

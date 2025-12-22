@@ -2,7 +2,7 @@
 import { ElButton } from 'element-plus';
 import { ref, computed, onMounted } from 'vue'
 import { getFinishedProjectsApi } from '@/api/project'
-import { pl } from 'element-plus/es/locale';
+
 
 
 const searchForm = ref({
@@ -12,7 +12,7 @@ const searchForm = ref({
 const statusMap = {
     0: '待审核',
     1: '已驳回',
-    2: '已通过',
+    2: '已逾期',
     3: '进行中',
     4: '已结项',
     5: '已废弃'

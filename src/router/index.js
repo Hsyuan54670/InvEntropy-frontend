@@ -15,6 +15,7 @@ import AdminFundsApproval from '@/views/admin/AdminFundsApproval.vue'
 import AdminManageProjects from '@/views/admin/AdminProjectsView.vue'
 import AdminFundsLogs from '@/views/admin/AdminFundsLog.vue'
 import AdminProjectsLogs from '@/views/admin/AdminProjectsLog.vue'
+import AdminAccount from '@/views/admin/AdminAccount.vue'
 
 // JWT解码函数 - 根据后端JWT生成逻辑解析token
 function parseJwt(token) {
@@ -68,7 +69,8 @@ const router = createRouter({
             {path:'/fundsApproval', name:'FundsApproval', component:AdminFundsApproval},
             {path:'/manageProjects', name:'ManageProjects', component:AdminManageProjects},
             {path:'/fundsLogs', name:'FundsLogs', component:AdminFundsLogs},
-            {path:'/projectsLogs', name:'ProjectsLogs', component:AdminProjectsLogs}
+            {path:'/projectsLogs', name:'ProjectsLogs', component:AdminProjectsLogs},
+            {path:'/account',name:'Account', component:AdminAccount}
         ]
     },
   ]
