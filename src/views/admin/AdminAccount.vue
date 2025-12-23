@@ -26,14 +26,22 @@ const addAccount=()=>{
     dialogVisible.value = true
 }
 const submitForm = async()=>{
-    const res = await addAccountApi(AccountForm.value)
-    if(res.code === 200){ 
-        ElMessage.success('添加成功！')
-        dialogVisible.value = false
-        initTableData()
-    }else{
-        ElMessage.error(res.msg || '添加失败')
-    } 
+    // 验证表单
+    try {
+        await formRef.value.validate()
+        const res = await addAccountApi(AccountForm.value)
+        if(res.code === 200){ 
+            ElMessage.success('添加成功！')
+            dialogVisible.value = false
+            initTableData()
+            formRef.value.resetFields()
+        }else{
+            ElMessage.error(res.msg || '添加失败')
+        } 
+    } catch (error) {
+        console.log('表单验证失败', error)
+        ElMessage.error('请检查输入信息是否正确')
+    }
 }
 
 const deleteConfirm = (id) => {
@@ -71,30 +79,39 @@ onMounted(()=>{
 
 const rules = {
     phone: [
-        { required: true, message: '请输入手机号', trigger: 'blur' },
-        { min: 11, max: 11, message: '请输入正确的手机号', trigger: 'blur' },
-        { validator: (rule, value, callback) => {
-            if (!value) {
-                callback(new Error('请输入手机号'));
-            } else if (!/^1[3456789]\d{9}$/.test(value)) {
-                callback(new Error('请输入正确的手机号'));
-            } else {
-                callback();
-            }
-        }, trigger: 'change' }
+        { required: true, message: '请输入手机号', trigger: ['blur', 'change'] },
+        { min: 11, max: 11, message: '请输入正确的11位手机号', trigger: ['blur', 'change'] },
+        { 
+            validator: (rule, value, callback) => {
+                if (!value) {
+                    callback(new Error('请输入手机号'));
+                } else if (!/^1[3456789]\d{9}$/.test(value)) {
+                    callback(new Error('请输入正确的手机号'));
+                } else {
+                    callback();
+                }
+            }, 
+            trigger: ['blur', 'change'] 
+        }
     ],
     name: [
-        { required: true, message: '请输入姓名', trigger: 'submit' },
+        { required: true, message: '请输入姓名', trigger: ['blur', 'change'] },
+        { min: 2, max: 10, message: '姓名长度应在2到10个字符之间', trigger: ['blur', 'change'] }
     ],
     gender: [
         { required: true, message: '请选择性别', trigger: 'change' },
     ],
     age: [
-        { required: true, message: '请输入年龄', trigger: 'blur' },
-        { type: 'number', message: '年龄必须为数字值', trigger: ['blur', 'change'] }
+        { required: true, message: '请输入年龄', trigger: ['blur', 'change'] },
+        { 
+            type: 'number', 
+            message: '年龄必须为数字值', 
+            trigger: ['blur', 'change'] 
+        },
     ],
-    collge: [
-        { required: true, message: '请选择学院', trigger: 'blur' },
+    college: [
+        { required: true, message: '请输入学院', trigger: ['blur', 'change'] },
+        { min: 2, max: 20, message: '学院名称长度应在2到20个字符之间', trigger: ['blur', 'change'] }
     ],
 }
 </script>
@@ -137,12 +154,12 @@ const rules = {
                     </el-radio-group>
                 </el-form-item>
                 <el-form-item label="年龄" prop="age">
-                    <el-input v-model="AccountForm.age" style="width: 300px;"></el-input>
+                    <el-input v-model.number="AccountForm.age" type="number" :min="1" :max="120" style="width: 300px;"></el-input>
                 </el-form-item>
                 <el-form-item label="手机号" prop="phone">
                     <el-input v-model="AccountForm.phone" style="width: 300px;"></el-input>
                 </el-form-item>
-                <el-form-item label="学院" prop="collge">
+                <el-form-item label="学院" prop="college">
                     <el-input v-model="AccountForm.college" style="width: 300px;"></el-input>
                 </el-form-item>
             </el-form>
@@ -159,4 +176,4 @@ const rules = {
 <style scoped>
 
 
-</style> 
+</style>
