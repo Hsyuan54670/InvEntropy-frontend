@@ -59,3 +59,26 @@ export const getFundsApi=()=>{
 export const getKindsApi=()=>{
     return request.get(`/admin/kinds`)
 }
+
+
+export const getAccountApi=()=>{
+    return request.get(`/admin/accountList`)
+}
+
+export const addAccountApi=(form)=>{
+    return request.post(`/admin/addAccount`, {
+        name: form.name,
+        gender: form.gender,
+        age: form.age,
+        phone: form.phone,
+        college: form.college
+    }, {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+}
+
+export const deleteAccountApi=(id)=>{
+    return request.delete(`/admin/deleteAccount/${id}`)
+}
