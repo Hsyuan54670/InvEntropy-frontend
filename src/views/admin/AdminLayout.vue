@@ -27,7 +27,6 @@ const logout=()=>{
     
   })
 }
-
 </script>
 
 <template>
@@ -35,101 +34,156 @@ const logout=()=>{
     <!-- 头部 -->
     <el-container class="first-container">
       <el-header class="header">
-        <span class="title">XX大学项目管理系统</span>
-        <span class="right-tools">
-          <a href="javascript:void(0)" @click="logout">
-            <el-icon><SwitchButton /></el-icon>管理员退出
-          </a>
-        </span>
+        <div class="header-content">
+          <span class="title">XX大学项目管理系统 - 管理员</span>
+          <div class="right-tools">
+            <el-button 
+              type="danger" 
+              :icon="SwitchButton" 
+              @click="logout"
+            >
+              管理员退出
+            </el-button>
+          </div>
+        </div>
       </el-header>
 
       <el-container class="second-container">
       <!-- 侧边栏 -->
-        <el-aside width="300px" class="aside">
-          <el-menu router="true">
+        <el-aside width="250px" class="aside">
+          <el-menu 
+            router="true" 
+            class="side-menu"
+            :default-active="$route.path"
+            :collapse="false"
+            background-color="#f8f9fa"
+            text-color="#343a40"
+            active-text-color="#d9534f"
+          >
+            <el-menu-item index="/AdminHome">
+              <el-icon><HomeFilled /></el-icon>
+              <span>概览</span>
+            </el-menu-item>
+              
+            <el-sub-menu index="1">
+              <template #title>
+                <el-icon><Opportunity /></el-icon>
+                <span>工作</span>
+              </template>
+                <el-menu-item index="/projectsApproval">
+                  <el-icon><List /></el-icon>
+                  <span>审批项目</span>
+                </el-menu-item>
+                <el-menu-item index="/fundsApproval">
+                  <el-icon><Coin /></el-icon>
+                  <span>审批经费</span>
+                </el-menu-item>
+            </el-sub-menu>
+            <el-sub-menu index="2">
+              <template #title>
+                <el-icon><Menu /></el-icon>
+                <span>管理</span>
+              </template> 
+                <el-menu-item index="/manageProjects">
+                  <el-icon><Checked /></el-icon>
+                  <span>查看所有项目</span>
+                </el-menu-item>
+                <el-menu-item index="/fundsLogs">
+                  <el-icon><TrendCharts /></el-icon>
+                  <span>资金流水记录</span>
+                </el-menu-item>
+                <el-menu-item index="/projectsLogs">
+                  <el-icon><Management /></el-icon>
+                  <span>项目管理记录</span>
+                </el-menu-item>
+                <el-menu-item index="/account">
+                  <el-icon><Management /></el-icon>
+                  <span>账号管理</span>
+                </el-menu-item>
+            </el-sub-menu>
 
-          <el-menu-item index="/AdminHome">
-            <template #title>
-              <el-icon><HomeFilled /></el-icon>概览
-            </template>
-          </el-menu-item>
-            
-          <el-sub-menu index="1">
-            <template #title>
-              <el-icon><Opportunity /></el-icon>工作
-            </template>
-              <el-menu-item index="/projectsApproval"><el-icon><List /></el-icon>申批项目</el-menu-item>
-              <el-menu-item index="/fundsApproval"><el-icon><Coin /></el-icon>审批经费</el-menu-item>
-          </el-sub-menu>
-          <el-sub-menu index="2">
-            <template #title>
-              <el-icon><Menu /></el-icon>管理
-            </template> 
-                <el-menu-item index="/manageProjects"><el-icon><Checked /></el-icon>查看所有项目</el-menu-item>
-                <el-menu-item index="/fundsLogs"><el-icon><TrendCharts /></el-icon>资金流水记录</el-menu-item>
-                <el-menu-item index="/projectsLogs"><el-icon><Management /></el-icon>项目管理记录</el-menu-item>
-                <el-menu-item index="/account"><el-icon><Management /></el-icon>账号管理</el-menu-item>
-          </el-sub-menu>
-
-        </el-menu>
+          </el-menu>
         </el-aside>
       <!-- 主体 -->
-        <el-main>
+        <el-main class="main-content">
           <!-- 路由出口，页面内容将在这里渲染 -->
           <router-view></router-view>
         </el-main>
       </el-container>
     </el-container>
-
-    
-
   </div>
-
 </template>
 
 <style scoped>
+.common-layout {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.first-container {
+  height: 100vh;
+}
+
 .header {
-  height: 60px;
+  padding: 0;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid #eee;
+}
+
+.header-content {
   display: flex;
-  justify-content: space-between; 
+  justify-content: space-between;
   align-items: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-  padding: 0 30px;
-  position: relative;
+  padding: 0 24px;
+  height: 60px;
+  background: #fff;
 }
+
 .title {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 600;
-  color: white;
-  font-family: 'Microsoft YaHei', sans-serif;
-  letter-spacing: 1px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  color: #2c3e50;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
 }
+
 .right-tools {
   display: flex;
   align-items: center;
-  font-size: 14px;
-  font-family: 'Microsoft YaHei', sans-serif;
+  gap: 12px;
 }
-.right-tools a{
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  color: rgba(255, 255, 255, 0.9);
-  text-decoration: none;
-  padding: 8px 15px;
-  border-radius: 20px;
-  transition: all 0.3s ease;
-}
-.right-tools a:hover {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-}
+
 .second-container .aside {
-  border-right: 2px solid #e0e0e0;
+  border-right: 1px solid #e9ecef;
   background-color: #f8f9fa;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+}
+
+.side-menu {
+  border-right: none;
   height: calc(100vh - 60px);
-  overflow-y: auto;
+}
+
+.main-content {
+  background-color: #f5f7fa;
+  padding: 20px;
+}
+
+:deep(.el-menu) {
+  border-right: none;
+}
+
+:deep(.el-menu-item:hover) {
+  background-color: #ffebee;
+}
+
+:deep(.el-sub-menu__title:hover) {
+  background-color: #ffebee;
+}
+
+:deep(.el-menu-item.is-active) {
+  background-color: #fadfdd;
+  color: #d9534f;
 }
 </style>

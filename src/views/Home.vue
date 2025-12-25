@@ -52,20 +52,26 @@ const initChart = () =>{
     myChart.value = echarts.init(chartDom);
     const option = {
         title: {
-            text: '项目计划图',
+            text: '项目进度',
+            left: 'center',
+            textStyle: {
+              fontSize: 18,
+              fontWeight: 'bold'
+            }
         },
         tooltip: {
             trigger: 'item',
+            formatter: '{a} <br/>{b}: {c}天'
         },
         legend: {
-            top: '100px',
+            top: '7%',
             left: 'center',
         },
         series: [
             {
                 name: '剩余时间',
                 type: 'pie',
-                data: ['40%','70%'],
+                radius: ['40%', '70%'],
                 avoidLabelOverlap: false,
                 itemStyle: {
                     borderRadius: 10,
@@ -73,18 +79,18 @@ const initChart = () =>{
                     borderWidth: 2
                   },
                   label: {
-                    show: false,
-                    position: 'center'
+                    show: true,
+                    formatter: '{b}: {d}%'
                   },
                   emphasis: {
                     label: {
                       show: true,
-                      fontSize: 40,
+                      fontSize: 16,
                       fontWeight: 'bold'
                     }
                   },
                   labelLine: {
-                    show: false,
+                    show: true
                   },
                   data: timeList.value
             }
@@ -107,7 +113,9 @@ const uploadChart = () => {
 }
 const QueryTimeList = () => {
     for (let i = 0; i < ingProjectsList.value.length; i++) {
-        timeList.value.push({value:new Date(ingProjectsList.value[i].deadline).getTime() - Date.now(),name:ingProjectsList.value[i].projectName})
+        // 转换为天数
+        const daysLeft = Math.ceil((new Date(ingProjectsList.value[i].deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+        timeList.value.push({value: daysLeft, name: ingProjectsList.value[i].projectName})
     }
     if(myChart.value)
         uploadChart()
@@ -143,89 +151,195 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <el-row gutter="10">
-        <el-col :span="10">
-            
-                <div class="user-info" >
-        <el-card >
-            <div class="card-content">
-                <p>姓名：{{ user.name }}</p>
-                <p>年龄：{{ user.age }}</p>
-                <p>性别：{{ user.gender === 'M' ? '男' : user.gender === 'F' ? '女' : '未知' }}</p>
-                <p>所属学院：{{ user.college }}</p>
-                <p>电话号码：{{ user.phone }}</p>
-                <p>进行中的项目数量：{{ user.ingProjects }}</p>
-                <p>已完成项目数量：{{ user.finishedProjects }}</p>
-                <p>已通过项目数量：{{ user.passedProjects }}</p>
-            </div>
-        </el-card>
+    <el-row :gutter="20">
+        <el-col :span="8">
+            <el-card class="user-info-card">
+                <template #header>
+                    <div class="card-header">
+                        <span>个人信息</span>
+                    </div>
+                </template>
+                <div class="info-content">
+                    <p><i class="el-icon-user"></i> 姓名：{{ user.name }}</p>
+                    <p><i class="el-icon-male" v-if="user.gender === 'M'"></i>
+                       <i class="el-icon-female" v-else-if="user.gender === 'F'"></i>
+                       <i class="el-icon-help" v-else></i> 性别：{{ user.gender === 'M' ? '男' : user.gender === 'F' ? '女' : '未知' }}</p>
+                    <p><i class="el-icon-school"></i> 学院：{{ user.college }}</p>
+                    <p><i class="el-icon-phone"></i> 电话：{{ user.phone }}</p>
+                    <p><i class="el-icon-timer"></i> 年龄：{{ user.age }}</p>
                 </div>
-            
-            
-                <div class="ing-projects" >
-        <el-card style="height: 445px;">
-            <div class="card-content">
-                <h1 align="center" style="margin-bottom:30px;">进行中的项目</h1>
-                <div class="carousel-container">
-                    <el-carousel
-                        height="220px"
-                        :autoplay="true"
-                        :interval="3000"
-                        motion-blur
-                    >
-                        <el-carousel-item v-for="project in ingProjectsList" :key="project.id" >
-                            <div class="carousel-item">
-                                <p>项目名称：{{ project.projectName }}</p>
-                                <p>经费剩余：{{ project.funds }} RMB</p>
-                                <p>截止时间：{{ project.deadline }}</p>
-                            </div>
-                            <el-countdown
-                                :value="new Date(project.deadline).getTime()"
-                                format="HH:mm:ss"
-                                :auto-start="false"
-                                prefix="剩余时间："
-                                align="center"
-                            />
-                        </el-carousel-item>
-                        
-                    </el-carousel>
-                    
+            </el-card>
+
+            <el-card class="stats-card">
+                <template #header>
+                    <div class="card-header">
+                        <span>项目统计</span>
+                    </div>
+                </template>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value">{{ user.ingProjects }}</div>
+                        <div class="stat-label">进行中</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">{{ user.finishedProjects }}</div>
+                        <div class="stat-label">已完成</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">{{ user.passedProjects }}</div>
+                        <div class="stat-label">已通过</div>
+                    </div>
                 </div>
-            
-            </div>
-        </el-card>
-                </div>
+            </el-card>
         </el-col>
 
-        <el-col :span="14">
-            <div class="report-projects">
-                <el-card style="height: 835px;">
-                    <div class="card-content">
-                        <div id="myChart" style="height: 700px;" v-if="timeList.length>0"></div>
-                        <div v-else>
-                            <el-empty description="暂无进行中的项目" />
-                        </div>
+        <el-col :span="8">
+            <el-card class="projects-card">
+                <template #header>
+                    <div class="card-header">
+                        <span>进行中的项目</span>
                     </div>
-                </el-card>
-            </div>
+                </template>
+                <div v-if="ingProjectsList.length > 0">
+                    <div 
+                        v-for="project in ingProjectsList" 
+                        :key="project.id" 
+                        class="project-item"
+                    >
+                        <h4>{{ project.projectName }}</h4>
+                        <div class="project-details">
+                            <div class="detail-item">
+                                <span class="label">经费：</span>
+                                <span class="value">{{ project.funds }} RMB</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">截止：</span>
+                                <span class="value">{{ project.deadline }}</span>
+                            </div>
+                        </div>
+                        <el-progress 
+                            :percentage="Math.max(0, Math.round((Date.now()-new Date(project.startTime).getTime())/(new Date(project.deadline).getTime()-new Date(project.startTime).getTime())* 100) )" 
+                            :color="project.funds > 50000 ? '#67C23A' : project.funds > 10000 ? '#E6A23C' : '#F56C6C'"
+                        />
+                    </div>
+                </div>
+                <div v-else class="no-projects">
+                    <el-empty description="暂无进行中的项目" />
+                </div>
+            </el-card>
+        </el-col>
+
+        <el-col :span="8">
+            <el-card class="chart-card">
+                <template #header>
+                    <div class="card-header">
+                        <span>项目进度</span>
+                    </div>
+                </template>
+                <div id="myChart" style="height: 680px;" v-if="timeList.length>0"></div>
+                <div v-else class="no-chart">
+                    <el-empty description="暂无数据" />
+                </div>
+            </el-card>
         </el-col>
     </el-row>
-    
-
 </template>
 
 <style scoped>
-.user-info {
-    margin-bottom: 20px;
-}
-.ing-projects {
-    margin-top: 20px;
-}
-.carousel-item {
-    background-color: rgb(72, 96, 106);
-    color: #fff;
-    padding: 20px;
-    border-radius: 10px;
+.card-header {
+    font-weight: 600;
+    font-size: 16px;
+    color: #303133;
 }
 
-</style> 
+.info-content p {
+    margin: 12px 0;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+}
+
+.info-content i {
+    margin-right: 8px;
+    width: 16px;
+    color: #409EFF;
+}
+
+.stats-grid {
+    display: flex;
+    justify-content: space-between;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 10px;
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: #409EFF;
+    margin-bottom: 4px;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #909399;
+}
+
+.project-item {
+    padding: 16px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.project-item:last-child {
+    border-bottom: none;
+}
+
+.project-item h4 {
+    margin: 0 0 12px;
+    font-size: 16px;
+    color: #303133;
+}
+
+.project-details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+}
+
+.label {
+    color: #909399;
+}
+
+.value {
+    color: #303133;
+    font-weight: 500;
+}
+
+.no-projects {
+    text-align: center;
+    padding: 40px 0;
+}
+
+.no-chart {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 400px;
+}
+
+.user-info-card {
+    margin-bottom: 20px;
+}
+
+.projects-card, .chart-card {
+    height: 100%;
+    overflow-y: auto;
+}
+</style>

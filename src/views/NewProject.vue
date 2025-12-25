@@ -1,6 +1,6 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ref, onMounted, watch } from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { UploadFilled } from '@element-plus/icons-vue'
 import { submitProjectApi } from '@/api/project'
 
@@ -15,41 +15,52 @@ const subForm = ref({
     projectType: null,
     applicant: '',
     applicantId: '',
-    funds: '',
+    funds: null, // 改为null初始值
     content: '',
     deadline: '',
+})
+
+// 添加上传组件的引用
+const uploadRef = ref()
+const formRef = ref()
+
+// 监视funds字段变化，确保始终为数字类型
+watch(() => subForm.value.funds, (newVal) => {
+    if(newVal !== null && newVal !== '' && !isNaN(newVal)) {
+        subForm.value.funds = Number(newVal)
+    }
 })
 // 表单验证规则
 const rules = {
     projectName: [
         { required: true, message: '项目名称不能为空', trigger: 'blur' },
+        { min: 2, max: 50, message: '项目名称长度应在2-50个字符之间', trigger: 'blur' },
     ],
     projectType: [
         { required: true, message: '项目类型不能为空', trigger: 'change' },
     ],
     applicant: [
         { required: true, message: '项目负责人不能为空', trigger: 'blur' },
+        { pattern: /^[\u4e00-\u9fa5a-zA-Z\s]{2,20}$/, message: '项目负责人姓名格式不正确', trigger: 'blur' },
     ],
     funds: [
-        { required: true, message: '项目经费不能为空', trigger: 'blur' },
-        { type: 'number', message: '只能输入正数', trigger: 'change' },
-        { min: 0, message: '项目经费不能为负数', trigger: 'blur' },
+        { required: true, message: '项目经费不能为空', trigger: ['blur','change'] },
+        { type: 'number', message: '项目经费必须为数字值', trigger: ['blur','change'] },
     ],
     content: [
         { required: true, message: '项目内容不能为空', trigger: 'blur' },
     ],
     deadline: [
-        //{ required: true, message: '截止日期不能为空', trigger: 'blur' },
-        //{ validator: (val) => new Date(val) > new Date(), message: '截止日期必须大于当前日期', trigger: 'blur' },
+        { required: true, message: '截止日期不能为空', trigger: 'change' },
     ],
 }
+
 // 禁用今天及今天之前的日期
 const disablePastDatetimes = (date) => {
     const today = new Date();
-    today.setHours(23, 59, 59, 59);
+    today.setHours(0, 0, 0, 0);
     return date.getTime() < today.getTime();
 }
-
 
 // 上传文件前的校验函数
 const beforeFileUpload = (file) => {
@@ -66,9 +77,15 @@ const beforeFileUpload = (file) => {
     }
     return true
 }
+
 const afterUpload =(response)=>{
     subForm.value.content=response.data
     console.log('上传成功后的响应数据:', response.data)
+    
+    // 验证上传内容字段
+    if (formRef.value) {
+        formRef.value.validateField('content')
+    }
 }
 
 onMounted(() => {
@@ -77,15 +94,28 @@ onMounted(() => {
 });
 
 // 表单提交函数
-const submitForm = () => {
-    console.log('提交的表单数据:', subForm.value)
-    submitProjectApi(subForm.value).then(res => {
-        if (res.code === 200) {
-            ElMessage.success('项目提交成功！')
+const submitForm = async () => {
+    
+    if (formRef.value) {
+        // 验证整个表单
+        const valid = await formRef.value.validate().catch(() => false)
+        if (valid) {
+            console.log('提交的表单数据:', subForm.value)
+            submitProjectApi(subForm.value).then(res => {
+                if (res.code === 200) {
+                    ElMessage.success('项目提交成功！')
+                    formRef.value.resetFields()
+                    if (uploadRef.value) {
+                        uploadRef.value.clearFiles()
+                    }
+                } else {
+                    ElMessage.error(res.msg || '项目提交失败')
+                }
+            })
         } else {
-            ElMessage.error(res.msg || '项目提交失败')
+            ElMessage.warning('请完善表单中的必填项和格式要求')
         }
-    })
+    }
 }
 
 // 清空表单函数
@@ -93,10 +123,21 @@ const clear = () => {
     subForm.value = {
         projectName: '',
         projectType: '',
+        content: '',
         applicant: '',
-        funds: '',
+        funds: null,
+        deadline: '',
+    }
+    // 清空上传组件中的文件列表
+    if (uploadRef.value) {
+        uploadRef.value.clearFiles()
+    }
+    // 重置表单验证状态
+    if (formRef.value) {
+        formRef.value.clearValidate()
     }
     ElMessage.info('表单已清空')
+
 }
 </script>
 
@@ -112,7 +153,7 @@ const clear = () => {
     </template>
     <div class="card-content">
         <!-- 项目申报书内容 -->
-        <el-form :model="subForm" :rules="rules" label-width="120px">
+        <el-form ref="formRef" :model="subForm" :rules="rules" label-width="120px">
             <el-form-item label="项目名称" prop="projectName">
                 <el-input v-model="subForm.projectName" placeholder="请输入项目名称" clearable style="width: 220px;" type="text" />
             </el-form-item>
@@ -130,7 +171,7 @@ const clear = () => {
                 <el-input v-model="subForm.applicant" placeholder="请输入项目负责人" clearable style="width: 220px;" type="text" />
             </el-form-item>
             <el-form-item label="项目经费" prop="funds">
-                <el-input v-model="subForm.funds" placeholder="请输入项目经费" style="width: 220px;" type="number" >
+                <el-input v-model.number="subForm.funds" placeholder="请输入项目经费" style="width: 220px;" type="number" :min="0">
                     <template #suffix>
                         <span>RMB</span>
                     </template>
@@ -139,6 +180,7 @@ const clear = () => {
 
             <el-form-item label="项目内容" prop="content">
                 <el-upload
+                    ref="uploadRef"
                     class="content-upload"
                     drag
                     action="/api/upload"

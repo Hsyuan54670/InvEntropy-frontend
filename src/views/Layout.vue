@@ -1,23 +1,19 @@
 <script setup>
-import { ref,onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import {ElMessageBox,ElMessage} from 'element-plus'
+import { ElMessageBox, ElMessage } from 'element-plus'
 import { changePasswordApi } from '@/api/teacher'
-const router = useRouter()
-const user=ref('')
-const dialogVisible=ref(false)
-const subForm=ref({
-  id:'',
-  password:'',
-  confirmPassword:''
-})
 
-onMounted(()=>{
+const router = useRouter()
+const dialogVisible = ref(false)
+const subForm = ref({
+  id: '',
+  password: '',
+  confirmPassword: ''
 })
 
 // 退出登录
-const logout=()=>{
-  // 确认退出登录
+const logout = () => {
   ElMessageBox.confirm(
     '确定退出登录吗？',
     '提示',
@@ -28,43 +24,43 @@ const logout=()=>{
     }
   ).then(() => {
     localStorage.removeItem('loginUser')
-    user.value=''
     router.push('/login')
-  }).catch(() => {
-    
-  })
+  }).catch(() => {})
 }
+
 // 修改密码
-const cpFormRef=ref()
-const openChangePassword=()=>{
-  if(cpFormRef.value){
+const cpFormRef = ref()
+const openChangePassword = () => {
+  if (cpFormRef.value) {
     cpFormRef.value.resetFields()
   }
-  subForm.value.password=''
-  subForm.value.confirmPassword=''
-  dialogVisible.value=true
+  subForm.value.password = ''
+  subForm.value.confirmPassword = ''
+  dialogVisible.value = true
 }
-const submitChangePassword=async()=>{
-  if(!cpFormRef.value){
+
+const submitChangePassword = async () => {
+  if (!cpFormRef.value) {
     ElMessage.error('请填写完整密码信息')
     return
   }
-  cpFormRef.value.validate(async(valid)=>{
-    if(!valid){
+  cpFormRef.value.validate(async (valid) => {
+    if (!valid) {
       ElMessage.error('请填写完整密码信息')
       return
-    }else{
-      const result=await changePasswordApi(subForm.value)
-      if(result.code==200){
+    } else {
+      const result = await changePasswordApi(subForm.value)
+      if (result.code === 200) {
         ElMessage.success(result.msg)
-        dialogVisible.value=false
-      }else{
+        dialogVisible.value = false
+      } else {
         ElMessage.error(result.msg)
       }
     }
   })
 }
-const rules=ref({
+
+const rules = ref({
   password: [
     { required: true, message: '请输入新密码', trigger: 'blur' },
     { min: 6, max: 32, message: '密码长度应在6到32位之间', trigger: 'blur' },
@@ -92,124 +88,202 @@ const rules=ref({
     <!-- 头部 -->
     <el-container class="first-container">
       <el-header class="header">
-        <span class="title">XX大学项目管理系统</span>
-        <span class="right-tools">
-          <a href="javascript:void(0)" @click="openChangePassword">
-            <el-icon><EditPen /></el-icon>修改密码
-            
-          </a>
-          <span class="separator">&nbsp;&nbsp;|&nbsp;&nbsp;</span>
-          <a href="javascript:void(0)" @click="logout">
-            <el-icon><SwitchButton /></el-icon>退出登录
-          </a>
-        </span>
+        <div class="header-content">
+          <span class="title">XX大学项目管理系统</span>
+          <div class="right-tools">
+            <el-dropdown>
+              <span class="user-actions">
+                <el-icon><User /></el-icon>
+                <span class="user-name">用户</span>
+                <el-icon><ArrowDown /></el-icon>
+              </span>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item @click="openChangePassword">
+                    <el-icon><EditPen /></el-icon>修改密码
+                  </el-dropdown-item>
+                  <el-dropdown-item @click="logout">
+                    <el-icon><SwitchButton /></el-icon>退出登录
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+          </div>
+        </div>
       </el-header>
 
       <el-container class="second-container">
-      <!-- 侧边栏 -->
-        <el-aside width="300px" class="aside">
-          <el-menu router="true">
-
-          <el-menu-item index="/home">
-            <template #title>
-              <el-icon><HomeFilled /></el-icon>个人主页
-            </template>
-          </el-menu-item>
-            
-          <el-sub-menu index="1">
-            <template #title>
-              <el-icon><Menu /></el-icon>项目管理
-            </template>
-              <el-menu-item index="/newProject"><el-icon><Promotion /></el-icon>申报项目</el-menu-item>
-              <el-sub-menu index="1-4">
-              <template #title><el-icon><UserFilled /></el-icon>我的项目</template>
-              <el-menu-item index="/ingProjects"><el-icon><Tools /></el-icon>进行中的项目</el-menu-item>
-              <!-- 未通过包括被驳回和未处理的项目 -->
-              <el-menu-item index="/unpassedProjects"><el-icon><WarningFilled /></el-icon>未通过的项目</el-menu-item>  
-              <el-menu-item index="/finishedProjects"><el-icon><SuccessFilled /></el-icon>已完成的项目</el-menu-item>
+        <!-- 侧边栏 -->
+        <el-aside width="250px" class="aside">
+          <el-menu 
+            router="true" 
+            class="side-menu"
+            :default-active="$route.path"
+            background-color="#f8f9fa"
+            text-color="#343a40"
+            active-text-color="#409eff"
+          >
+            <el-menu-item index="/home">
+              <el-icon><HomeFilled /></el-icon>
+              <span>个人主页</span>
+            </el-menu-item>
+              
+            <el-sub-menu index="1">
+              <template #title>
+                <el-icon><Menu /></el-icon>
+                <span>项目管理</span>
+              </template>
+                <el-menu-item index="/newProject">
+                  <el-icon><Promotion /></el-icon>
+                  <span>申报项目</span>
+                </el-menu-item>
+                <el-sub-menu index="1-4">
+                <template #title>
+                  <el-icon><UserFilled /></el-icon>
+                  <span>我的项目</span>
+                </template>
+                <el-menu-item index="/ingProjects">
+                  <el-icon><Tools /></el-icon>
+                  <span>进行中的项目</span>
+                </el-menu-item>
+                <!-- 未通过包括被驳回和未处理的项目 -->
+                <el-menu-item index="/unpassedProjects">
+                  <el-icon><WarningFilled /></el-icon>
+                  <span>未通过的项目</span>
+                </el-menu-item>  
+                <el-menu-item index="/finishedProjects">
+                  <el-icon><SuccessFilled /></el-icon>
+                  <span>已完成的项目</span>
+                </el-menu-item>
+              </el-sub-menu>
             </el-sub-menu>
-          </el-sub-menu>
-
-        </el-menu>
+          </el-menu>
         </el-aside>
-      <!-- 主体 -->
-        <el-main>
+        
+        <!-- 主体 -->
+        <el-main class="main-content">
           <!-- 路由出口，页面内容将在这里渲染 -->
           <router-view></router-view>
         </el-main>
       </el-container>
     </el-container>
 
-    <div class="change-password-dialog">
-    <el-dialog title="修改密码" 
-     v-model="dialogVisible" 
+    <!-- 修改密码对话框 -->
+    <el-dialog 
+      title="修改密码" 
+      v-model="dialogVisible" 
       width="400px"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
     >
       <el-form :model="subForm" ref="cpFormRef" :rules="rules" label-width="120px">
         <el-form-item label="新密码" prop="password">
-          <el-input v-model="subForm.password" placeholder="请输入新密码" clearable style="width: 220px;" type="password" />
+          <el-input 
+            v-model="subForm.password" 
+            placeholder="请输入新密码" 
+            clearable 
+            style="width: 100%;" 
+            type="password" 
+          />
         </el-form-item>
         <el-form-item label="确认新密码" prop="confirmPassword">
-          <el-input v-model="subForm.confirmPassword" placeholder="请确认新密码" clearable style="width: 220px;" type="password" />
+          <el-input 
+            v-model="subForm.confirmPassword" 
+            placeholder="请确认新密码" 
+            clearable 
+            style="width: 100%;" 
+            type="password" 
+          />
         </el-form-item>
       </el-form>
 
       <template #footer>
-        <el-button type="primary" @click="submitChangePassword">确定</el-button>
         <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="submitChangePassword">确定</el-button>
       </template>
     </el-dialog>
   </div>
-  </div>
-
 </template>
 
 <style scoped>
+.common-layout {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.first-container {
+  height: 100vh;
+}
+
 .header {
+  padding: 0;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid #eee;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
   height: 60px;
-  display: flex;
-  justify-content: space-between; 
-  align-items: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-  padding: 0 30px;
-  position: relative;
+  background: #fff;
 }
+
 .title {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 600;
-  color: white;
-  font-family: 'Microsoft YaHei', sans-serif;
-  letter-spacing: 1px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-.right-tools {
+  color: #2c3e50;
+  letter-spacing: 0.5px;
   display: flex;
   align-items: center;
-  font-size: 14px;
-  font-family: 'Microsoft YaHei', sans-serif;
 }
-.right-tools a{
-  display: inline-flex;
+
+.user-actions {
+  display: flex;
   align-items: center;
-  gap: 5px;
-  color: rgba(255, 255, 255, 0.9);
-  text-decoration: none;
-  padding: 8px 15px;
-  border-radius: 20px;
+  gap: 8px;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 6px;
   transition: all 0.3s ease;
+  color: #495057;
 }
-.right-tools a:hover {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-}
-.right-tools .separator {
-  color: rgba(255, 255, 255, 0.6);
-}
-.second-container .aside {
-  border-right: 2px solid #e0e0e0;
+
+.user-actions:hover {
   background-color: #f8f9fa;
+  color: #409eff;
+}
+
+.user-name {
+  font-size: 14px;
+}
+
+.second-container .aside {
+  border-right: 1px solid #e9ecef;
+  background-color: #f8f9fa;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+}
+
+.side-menu {
+  border-right: none;
   height: calc(100vh - 60px);
-  overflow-y: auto;
+}
+
+.main-content {
+  background-color: #f5f7fa;
+  padding: 20px;
+}
+
+:deep(.el-menu) {
+  border-right: none;
+}
+
+:deep(.el-menu-item:hover) {
+  background-color: #eaf2ff;
+}
+
+:deep(.el-sub-menu__title:hover) {
+  background-color: #f5f9ff;
 }
 </style>

@@ -23,3 +23,7 @@ export const deleteProjectApi=(id)=>{
 export const updateDeadlineApi=(params)=>{
     return request.put(`/project/updateDeadline`,params)
 }
+
+export const getTimeLinesApi=(id)=>{
+    return request.get(`/project/getTimeLines/${id}`)
+}

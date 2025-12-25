@@ -3,22 +3,26 @@
   --vt-c-white: #ffffff;
   --vt-c-white-soft: #f8f8f8;
   --vt-c-white-mute: #f2f2f2;
-
-  --vt-c-black: #181818;
-  --vt-c-black-soft: #222222;
-  --vt-c-black-mute: #282828;
-
-  --vt-c-indigo: #2c3e50;
+  --vt-c-gray: #8e8e93;
+  --vt-c-gray-light-1: #aeaeae;
+  --vt-c-gray-light-2: #c7c7cc;
+  --vt-c-gray-light-3: #d1d1d6;
+  --vt-c-gray-light-4: #e5e5e7;
+  --vt-c-gray-dark-1: #545458;
+  --vt-c-gray-dark-2: #3a3a3c;
+  --vt-c-gray-dark-3: #2c2c2e;
+  --vt-c-gray-dark-4: #1c1c1e;
+  --vt-c-black: #1c1c1e;
 
   --vt-c-divider-light-1: rgba(60, 60, 60, 0.29);
   --vt-c-divider-light-2: rgba(60, 60, 60, 0.12);
   --vt-c-divider-dark-1: rgba(84, 84, 84, 0.65);
   --vt-c-divider-dark-2: rgba(84, 84, 84, 0.48);
 
-  --vt-c-text-light-1: var(--vt-c-indigo);
-  --vt-c-text-light-2: rgba(60, 60, 60, 0.66);
+  --vt-c-text-light-1: var(--vt-c-gray-dark-1);
+  --vt-c-text-light-2: var(--vt-c-gray-dark-2);
   --vt-c-text-dark-1: var(--vt-c-white);
-  --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
+  --vt-c-text-dark-2: var(--vt-c-white-soft);
 }
 
 /* semantic color variables for this project */
@@ -26,47 +30,34 @@
   --color-background: var(--vt-c-white);
   --color-background-soft: var(--vt-c-white-soft);
   --color-background-mute: var(--vt-c-white-mute);
-
-  --color-border: var(--vt-c-divider-light-2);
-  --color-border-hover: var(--vt-c-divider-light-1);
-
+  --color-border: var(--vt-c-gray-light-2);
+  --color-border-hover: var(--vt-c-gray-light-1);
   --color-heading: var(--vt-c-text-light-1);
   --color-text: var(--vt-c-text-light-1);
-
+  --color-text-light: var(--vt-c-text-light-2);
+  
   --section-gap: 160px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-background: var(--vt-c-black);
-    --color-background-soft: var(--vt-c-black-soft);
-    --color-background-mute: var(--vt-c-black-mute);
-
-    --color-border: var(--vt-c-divider-dark-2);
-    --color-border-hover: var(--vt-c-divider-dark-1);
-
-    --color-heading: var(--vt-c-text-dark-1);
-    --color-text: var(--vt-c-text-dark-2);
-  }
-}
-
+/* 全局样式重置 */
 *,
 *::before,
 *::after {
   box-sizing: border-box;
   margin: 0;
-  font-weight: normal;
+  position: relative;
+  font-weight: 400;
 }
 
 body {
   min-height: 100vh;
   color: var(--color-text);
   background: var(--color-background);
-  transition:
+  transition: 
     color 0.5s,
     background-color 0.5s;
   line-height: 1.6;
-  font-family:
+  font-family: 
     Inter,
     -apple-system,
     BlinkMacSystemFont,
@@ -79,8 +70,45 @@ body {
     'Droid Sans',
     'Helvetica Neue',
     sans-serif;
-  font-size: 15px;
+  font-size: 14px;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Element Plus 主题定制 */
+.el-container {
+  min-height: 100vh;
+}
+
+/* 优化表格样式 */
+.el-table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #343a40;
+}
+
+/* 优化按钮样式 */
+.el-button {
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+}
+
+/* 优化卡片样式 */
+.el-card__header {
+  border-bottom: 1px solid #ebeef5;
+  padding: 16px 20px;
+  font-weight: 500;
+  font-size: 16px;
+  color: #303133;
+}
+
+/* 优化输入框样式 */
+.el-input__wrapper {
+  transition: all 0.3s;
+}
+
+.el-input__wrapper.is-focus {
+  box-shadow: 0 0 0 1px #409eff inset;
 }

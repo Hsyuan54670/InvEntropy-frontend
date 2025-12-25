@@ -1,7 +1,7 @@
 <script lang="tsx" setup>
 import { ElButton } from 'element-plus';
 import { ref, computed, onMounted } from 'vue'
-import { getFinishedProjectsApi } from '@/api/project'
+import { getFinishedProjectsApi,getTimeLinesApi } from '@/api/project'
 
 
 
@@ -17,14 +17,7 @@ const statusMap = {
     4: '已结项',
     5: '已废弃'
 }
-const timelines=ref([
-    {status : 0, time : '2024-05-01 12:00:00'},
-    {status : 1, time : '2024-05-02 12:00:00'},
-    {status : 2, time : '2024-05-03 12:00:00'},
-    {status : 3, time : '2024-05-04 12:00:00'},
-    {status : 4, time : '2024-05-04 12:00:00'},
-    {status : 5, time : '2024-05-04 12:00:00'},   
-])
+const timelines=ref([])
 const drawer = ref(false)
 const handleSearch = () => {
     console.log(searchForm.value)
@@ -34,23 +27,31 @@ const currentProject = computed(() => {
     return playTable.value.find(item => item.id === currentId.value)
 })
 const ProjectView = (id: number) => {
-    drawer.value = true
     currentId.value = id
+    initTimeLines(id)
+    drawer.value = true
     console.log(currentId.value)
+}
+const initTimeLines=async(id)=>{
+    const res = await getTimeLinesApi(id)
+    if(res.code === 200) {
+        timelines.value = res.data
+        timelines.value.forEach(item=> {item.createTime=item.createTime.replace('T',' ')})
+    }
 }
 const playTable = ref([])
 const initPlayTable = async () => {
     const res = await getFinishedProjectsApi()
     if(res.code === 200) {
         playTable.value = res.data
-        playTable.value.forEach(item=> {item.updateTime=item.updateTime.replace('T',' ')})
+        playTable.value.forEach(item=> {item.deadline=item.deadline.replace('T',' ')})
     }
 }
 const columnsTable = [
     { key: 'name', dataKey: 'projectName', title: '项目名称', width: 200 ,align:'center' },
     { key: 'type', dataKey: 'projectType', title: '项目类型', width: 200 ,align:'center' },
     { key: 'content', dataKey: 'content', title: '项目内容', width: 300 ,align:'center' },
-    { key: 'updateTime', dataKey: 'updateTime', title: '结项时间', width: 270,align:'center' },
+    { key: 'deadline', dataKey: 'deadline', title: '结项时间', width: 270,align:'center' },
     { key: 'action',title: '操作', 
         cellRenderer: ({rowData}) =>(
             <>
@@ -71,7 +72,7 @@ const playTableData = computed(() => {
         remainingFunds: `¥${item.remainingFunds.toLocaleString()}`,
         funds: `¥${item.funds.toLocaleString()}`,
         content: item.content,
-        updateTime: item.updateTime
+        deadline: item.deadline
     }))
 });
 
@@ -121,7 +122,7 @@ onMounted(() => {
                 <p>项目名称：{{ currentProject.projectName }}</p>
                 <p>项目类型：{{ currentProject.projectType }}</p>
                 <p>项目内容：{{ currentProject.content }}</p>
-                <p>结项时间：{{ currentProject.updateTime }}</p>
+                <p>结项时间：{{ currentProject.deadline }}</p>
             </div>
             <div class="timeline">
                 <p>项目状态变更时间线：</p>
@@ -129,16 +130,16 @@ onMounted(() => {
                   <el-timeline-item
                     v-for="(activity, index) in timelines"
                     :key="index"
-                    :timestamp="activity.time"
-                    :type="activity.status === 0 ? 'default' : 
-                           activity.status === 1 ? 'warning' :
-                           activity.status === 2 ? 'info' :
-                           activity.status === 3 ? 'primary' :
-                           activity.status === 4 ? 'success' :
-                           'danger'"
-                    :size="activity.status === 1 ? 'large' : 'large'"
+                    :timestamp="activity.createTime"
+                    :type="activity.newStatus === 0 ? 'default' : 
+                           activity.newStatus === 1 ? 'warning' :
+                           activity.newStatus === 2 ? 'danger' :
+                           activity.newStatus === 3 ? 'primary' :
+                           activity.newStatus === 4 ? 'success' :
+                           'info'"
+                    :size="activity.newStatus === 1 ? 'large' : 'large'"
                   >
-                    {{ statusMap[activity.status] }}
+                    {{ statusMap[activity.newStatus] }}
                   </el-timeline-item>
                 </el-timeline>
             </div>
