@@ -27,3 +27,7 @@ export const updateDeadlineApi=(params)=>{
 export const getTimeLinesApi=(id)=>{
     return request.get(`/project/getTimeLines/${id}`)
 }
+
+export const getAllProjectsApiByCondition=(params) => {
+    return request.get(`/project/getAllProjectsByCondition`, {params} )
+}

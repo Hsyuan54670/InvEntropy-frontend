@@ -47,6 +47,13 @@ const ApprovalFunds=async(row)=>{
             })
             tableData.value = tableData.value.filter(item => item.id !== row.id)
             comment.value=''
+        }else if(res.code === 400) {
+            ElMessage({
+                message: res.msg,
+                type: 'warning',
+            })
+            tableData.value = tableData.value.filter(item => item.id !== row.id)
+            comment.value=''
         }
     }).catch(() => {})
 }

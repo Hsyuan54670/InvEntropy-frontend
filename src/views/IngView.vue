@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { ElButton } from 'element-plus';
+import { ElButton, ElMessage } from 'element-plus';
 import { ref, computed,onMounted } from 'vue'
 import { getIngProjectsApi } from '@/api/project';
 import { commitPayFundsApi } from '@/api/teacher';
@@ -25,10 +25,16 @@ const payFunds = (id: number) => {
     payForm.value.projectId = id
 }
 const submitPayFunds = async () => {
+    if(payForm.value.appliedFunds>payForm.value.remainingFunds){
+        ElMessage.error('申报经费不能大于剩余经费')
+        dialogVisible.value = false
+        return
+    }
     const res= await commitPayFundsApi(payForm.value);
     if(res.code==200){
         dialogVisible.value = false
         getPlayTable()
+        ElMessage.success('提交成功')
     }
 }
 9
@@ -159,22 +165,7 @@ onMounted(() => {
 
 <template>
     <h1>进行中的项目</h1>
-    <div class="search-form">
-        <el-form :inline="true" :model="searchForm" class="form-inline">
-            <el-form-item label="项目名称" style="width: 330px;">
-                <el-input v-model="searchForm.projectName" placeholder="请输入项目名称"></el-input>
-            </el-form-item>
-            <el-form-item label="项目类型" style="width: 330px;">
-                <el-select v-model="searchForm.projectType" placeholder="请选择项目类型">
-                    <el-option label="项目类型1" value="1"></el-option>
-                    <el-option label="项目类型2" value="2"></el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item>
-                <el-button type="primary" @click="handleSearch">查询</el-button>
-            </el-form-item>
-        </el-form>
-    </div>
+    
 
     <div class="table-container">
         <el-card class="play-table" style="width: 98%; height: 680px;">

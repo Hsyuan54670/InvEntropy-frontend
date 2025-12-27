@@ -1,7 +1,7 @@
 <script setup>
 import {ref,onMounted} from 'vue'
 import {getAllProjectsApi} from '@/api/admin'
-import {updateProjectStatusApi,deleteProjectApi,updateDeadlineApi} from '@/api/project'
+import {updateProjectStatusApi,deleteProjectApi,updateDeadlineApi,getAllProjectsApiByCondition} from '@/api/project'
 import {ElMessageBox,ElMessage} from 'element-plus'
 const tableData = ref([])
 const currentPage = ref(1)
@@ -119,10 +119,52 @@ const closeAndClear = () => {
 onMounted(()=>{
     initTableData()
 })
+const searchForm =ref({
+    page:1,
+    size:5,
+    projectId: '',
+    applicant: '',
+})
+const handleSearch = async() => { 
+    const res = await getAllProjectsApiByCondition(searchForm.value,{
+        page: currentPage.value,
+        size: pageSize.value,
+        projectId: searchForm.value.projectId,
+        applicant: searchForm.value.applicant
+    })
+    if(res.code === 200){
+        tableData.value = res.data.records
+        total.value = res.data.total
+        tableData.value.forEach(item=>{
+            item.deadline=item.deadline.replace('T',' ')
+            item.startTime=item.startTime.replace('T',' ')
+        })
+    }
+}
+const clearSearch = () => { 
+    searchForm.value.projectId = ''
+    searchForm.value.applicant = ''
+    initTableData()
+}
 </script>
 
 <template>
 <h1>项目列表</h1>
+<div class="search-form">
+        <el-form :inline="true" :model="searchForm" class="form-inline">
+            <el-form-item label="项目ID" style="width: 330px;">
+                <el-input v-model="searchForm.projectId" placeholder="请输入项目id"></el-input>
+            </el-form-item>
+            <el-form-item label="姓名" style="width: 330px;">
+                <el-input v-model="searchForm.applicant" placeholder="请输入姓名"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="handleSearch">查询</el-button>
+                <el-button  @click="clearSearch">重置</el-button>
+            </el-form-item>
+        </el-form>
+    </div>
+
     <div>
         <el-table :data="tableData" border style="width: 100%">
         <el-table-column prop="id" label="项目ID" align="center" ></el-table-column>

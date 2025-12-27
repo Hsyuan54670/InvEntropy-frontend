@@ -82,3 +82,4 @@ export const addAccountApi=(form)=>{
 export const deleteAccountApi=(id)=>{
     return request.delete(`/admin/deleteAccount/${id}`)
 }
+

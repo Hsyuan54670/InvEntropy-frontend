@@ -210,7 +210,7 @@ onBeforeUnmount(() => {
                         <div class="project-details">
                             <div class="detail-item">
                                 <span class="label">经费：</span>
-                                <span class="value">{{ project.funds }} RMB</span>
+                                <span class="value">{{ project.remainingFunds }} RMB</span>
                             </div>
                             <div class="detail-item">
                                 <span class="label">截止：</span>

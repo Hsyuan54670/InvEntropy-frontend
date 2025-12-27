@@ -1,6 +1,5 @@
 <script lang="tsx" setup>
 import { ElButton } from 'element-plus';
-import { te } from 'element-plus/es/locale';
 import { ref, computed, onMounted } from 'vue'
 import { getUnpassedProjectsApi } from '@/api/project'
 const searchForm = ref({
@@ -25,6 +24,9 @@ const initPlayTable =async() => {
     const res = await getUnpassedProjectsApi()
     if(res.code === 200) {
         playTable.value = res.data
+        playTable.value.forEach(item => {
+            item.approver = item.status === 1 ? item.approver : '暂无'
+        })
     }
 }
 const columnsTable = [
@@ -51,7 +53,12 @@ const columnsTable = [
     //     width: 180 ,
     //     align: 'center'
     // }
-    { key: 'approver', dataKey: 'approver', title: '审批人', width: 200, align: 'center' },
+    { key: 'approver', dataKey: 'approver', title: '审批人', width: 200, align: 'center',
+        cellRenderer: ({ cellData: approver }) => (
+            approver ? approver : '暂无'
+        ),
+    },
+
     { key: 'createTime', dataKey: 'createTime', title: '审批时间', width: 200, align: 'center',
         cellRenderer: ({ cellData: name }) => {
             return name ? name.split('T')[0]+' '+name.split('T')[1].split('.')[0] : '无'
@@ -78,22 +85,6 @@ onMounted(() => {
 
 <template>
     <h1>未通过的项目</h1>
-    <div class="search-form">
-        <el-form :inline="true" :model="searchForm" class="form-inline">
-            <el-form-item label="项目名称" style="width: 330px;">
-                <el-input v-model="searchForm.projectName" placeholder="请输入项目名称"></el-input>
-            </el-form-item>
-            <el-form-item label="项目状态" style="width: 330px;">
-                <el-select v-model="searchForm.status" placeholder="请选择项目状态">
-                    <el-option label="未审批" value=1></el-option>
-                    <el-option label="未通过" value=0></el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item>
-                <el-button type="primary" @click="handleSearch">查询</el-button>
-            </el-form-item>
-        </el-form>
-    </div>
 
     <div class="table-container">
         <el-card class="play-table" style="width: 98%; height: 680px;">

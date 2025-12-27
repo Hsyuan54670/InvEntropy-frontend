@@ -5,10 +5,12 @@ import { getFinishedProjectsApi,getTimeLinesApi } from '@/api/project'
 
 
 
-const searchForm = ref({
-    projectName: '',
-    projectType: ''
-})
+// 从URL中提取文件名
+const getFileName = (url) => {
+    if (!url) return '文件';
+    const parts = url.split('/');
+    return decodeURIComponent(parts[parts.length - 1]);
+};
 const statusMap = {
     0: '待审核',
     1: '已驳回',
@@ -50,7 +52,56 @@ const initPlayTable = async () => {
 const columnsTable = [
     { key: 'name', dataKey: 'projectName', title: '项目名称', width: 200 ,align:'center' },
     { key: 'type', dataKey: 'projectType', title: '项目类型', width: 200 ,align:'center' },
-    { key: 'content', dataKey: 'content', title: '项目内容', width: 300 ,align:'center' },
+    { key: 'content', dataKey: 'content', title: '项目内容', width: 300 ,align:'center',
+        cellRenderer: ({ cellData, rowData }) => {
+            // 假设 content 字段是文件路径或URL
+            if (!cellData) return '-';
+            
+            // 如果是字符串，直接显示为链接
+            if (typeof cellData === 'string') {
+                return (
+                    <a 
+                        href={cellData} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        style={{ 
+                            color: '#409eff', 
+                            textDecoration: 'none',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        {getFileName(cellData)} {/* 提取文件名 */}
+                    </a>
+                );
+            }
+            
+            // 如果是数组（多个文件）
+            if (Array.isArray(cellData)) {
+                return (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        {cellData.map((file, index) => (
+                            <a 
+                                key={index}
+                                href={file.url || file.path}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{ 
+                                    color: '#409eff', 
+                                    textDecoration: 'none',
+                                    cursor: 'pointer',
+                                    fontSize: '12px'
+                                }}
+                            >
+                                {file.name || getFileName(file.url || file.path)}
+                            </a>
+                        ))}
+                    </div>
+                );
+            }
+            
+            return cellData;
+        }
+     },
     { key: 'deadline', dataKey: 'deadline', title: '结项时间', width: 270,align:'center' },
     { key: 'action',title: '操作', 
         cellRenderer: ({rowData}) =>(
@@ -83,22 +134,7 @@ onMounted(() => {
 
 <template>
     <h1>已完成的项目</h1>
-    <div class="search-form">
-        <el-form :inline="true" :model="searchForm" class="form-inline">
-            <el-form-item label="项目名称" style="width: 330px;">
-                <el-input v-model="searchForm.projectName" placeholder="请输入项目名称"></el-input>
-            </el-form-item>
-            <el-form-item label="项目类型" style="width: 330px;">
-                <el-select v-model="searchForm.projectType" placeholder="请选择项目类型">
-                    <el-option label="项目类型1" value="1"></el-option>
-                    <el-option label="项目类型2" value="2"></el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item>
-                <el-button type="primary" @click="handleSearch">查询</el-button>
-            </el-form-item>
-        </el-form>
-    </div>
+    
 
     <div class="table-container">
         <el-card class="play-table" style="width: 98%; height: 680px;">
@@ -121,7 +157,9 @@ onMounted(() => {
             <div v-if="currentProject">
                 <p>项目名称：{{ currentProject.projectName }}</p>
                 <p>项目类型：{{ currentProject.projectType }}</p>
-                <p>项目内容：{{ currentProject.content }}</p>
+                <p>项目内容：
+                    <a :href="currentProject.content" class="a-content">{{currentProject.content.split('/')[currentProject.content.split('/').length-1]}}</a>
+                </p>
                 <p>结项时间：{{ currentProject.deadline }}</p>
             </div>
             <div class="timeline">

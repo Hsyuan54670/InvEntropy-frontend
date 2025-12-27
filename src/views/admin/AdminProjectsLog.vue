@@ -44,8 +44,9 @@ onMounted(()=>{
         <el-table-column prop="projectId" label="项目ID" align="center" ></el-table-column>
         <el-table-column prop="oldStatus" label="原始状态" align="center" >
             <template #default="scope">
-                <el-tag v-if="scope.row.oldStatus==0" type="danger">未审核</el-tag>
-                <el-tag v-if="scope.row.oldStatus==1" type="danger">未通过</el-tag>
+                <el-tag v-if="scope.row.oldStatus==-1" type="waring" color="#ccc" >未创建</el-tag>
+                <el-tag v-if="scope.row.oldStatus==0" type="primary" color="">未审核</el-tag>
+                <el-tag v-if="scope.row.oldStatus==1" type="waring" color="#333">未通过</el-tag>
                 <el-tag v-if="scope.row.oldStatus==2" type="danger">已逾期</el-tag>
                 <el-tag v-if="scope.row.oldStatus==3" type="primary">进行中</el-tag>
                 <el-tag v-if="scope.row.oldStatus==4" type="success">已完成</el-tag>
@@ -54,8 +55,8 @@ onMounted(()=>{
         </el-table-column>
         <el-table-column prop="newStatus" label="新状态" align="center" >
             <template #default="scope">
-                <el-tag v-if="scope.row.newStatus==0" type="danger">未审核</el-tag>
-                <el-tag v-if="scope.row.newStatus==1" type="danger">未通过</el-tag>
+                <el-tag v-if="scope.row.newStatus==0" type="primary" color="#a06">未审核</el-tag>
+                <el-tag v-if="scope.row.newStatus==1" type="waring" color="#cc6">未通过</el-tag>
                 <el-tag v-if="scope.row.newStatus==2" type="danger">已逾期</el-tag>
                 <el-tag v-if="scope.row.newStatus==3" type="primary">进行中</el-tag>
                 <el-tag v-if="scope.row.newStatus==4" type="success">已完成</el-tag>
