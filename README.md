@@ -118,7 +118,7 @@ src/
 └── main.js        # 入口文件
 ```
 
-## 🎯 主要页面
+## 🎯 主要页面(详细展示可前往[部署仓库](https://github.com/Hsyuan54670/InvEntropy-run.git))
 
 ### 登录页面 (`/login`)
 - 用户类型选择（普通用户/管理员）
