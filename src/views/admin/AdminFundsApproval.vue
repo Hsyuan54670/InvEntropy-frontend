@@ -102,7 +102,7 @@ onMounted(()=>{
 </script>
 
 <template>
-<h1>审批经费</h1>{{comment}}
+<h1>审批经费</h1>
     <div>
         <el-table :data="tableData" border style="width: 100%">
             <el-table-column prop="id" label="申请ID" v-if="false"/>

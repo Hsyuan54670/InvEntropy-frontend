@@ -3,10 +3,7 @@ import { ElButton, ElMessage } from 'element-plus';
 import { ref, computed,onMounted } from 'vue'
 import { getIngProjectsApi } from '@/api/project';
 import { commitPayFundsApi } from '@/api/teacher';
-const searchForm = ref({
-    projectName: '',
-    projectType: ''
-})
+
 const payForm = ref({
     projectId: 0,
     applicant: '', 
@@ -16,9 +13,7 @@ const payForm = ref({
     applicantId: 0 
 })
 
-const handleSearch = () => {
-    console.log(searchForm.value)
-}
+
 const dialogVisible = ref(false)
 const payFunds = (id: number) => {
     dialogVisible.value = true
@@ -29,6 +24,12 @@ const submitPayFunds = async () => {
         ElMessage.error('申报经费不能大于剩余经费')
         dialogVisible.value = false
         return
+    }
+    if(payForm.value.appliedFunds<=0){
+        ElMessage.error('申报经费不能小于0')
+        dialogVisible.value = false
+        return
+
     }
     const res= await commitPayFundsApi(payForm.value);
     if(res.code==200){
@@ -53,6 +54,7 @@ const getPlayTable = async () => {
     const result = await getIngProjectsApi()
     playTable.value = result.data
     playTable.value.forEach(item => {item.deadline=item.deadline.replace('T',' ')})
+    payForm.value.remainingFunds=playTable.value.remainingFunds
 }
 
 const columnsTable = [
