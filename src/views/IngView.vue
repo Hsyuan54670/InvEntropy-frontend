@@ -18,6 +18,7 @@ const dialogVisible = ref(false)
 const payFunds = (id: number) => {
     dialogVisible.value = true
     payForm.value.projectId = id
+    payForm.value.remainingFunds=playTable.value.find(item => item.id === id).remainingFunds
 }
 const submitPayFunds = async () => {
     if(payForm.value.appliedFunds>payForm.value.remainingFunds){
@@ -54,7 +55,7 @@ const getPlayTable = async () => {
     const result = await getIngProjectsApi()
     playTable.value = result.data
     playTable.value.forEach(item => {item.deadline=item.deadline.replace('T',' ')})
-    payForm.value.remainingFunds=playTable.value.remainingFunds
+    
 }
 
 const columnsTable = [
