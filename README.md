@@ -9,6 +9,17 @@ InvEntropy 项目管理系统是一个专为高校科研项目管理设计的现
 
 **技术栈**：Vue 3 + Element Plus + Vite  
 
+### 相关仓库
+<!-- 贴仓库克隆命令 + 依赖安装命令 -->
+1. [部署代码仓库(Docker)](https://github.com/Hsyuan54670/InvEntropy-run.git)
+```bash
+git clone https://github.com/Hsyuan54670/InvEntropy-run.git
+```
+2. [后端代码仓库(Java)](https://github.com/Hsyuan54670/InvEntropy-backend.git)
+```bash
+git clone https://github.com/Hsyuan54670/InvEntropy-backend.git
+```
+
 
 ## ✨ 功能特性
 
@@ -107,7 +118,7 @@ src/
 └── main.js        # 入口文件
 ```
 
-## 🎯 主要页面
+## 🎯 主要页面(详细展示可前往[部署仓库](https://github.com/Hsyuan54670/InvEntropy-run.git))
 
 ### 登录页面 (`/login`)
 - 用户类型选择（普通用户/管理员）
